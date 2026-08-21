@@ -1,5 +1,7 @@
 # Claude Jail
 
+**[Project website](https://shkrwnd.github.io/claude-jail/)** · **[Architecture](docs/architecture.md)** · **[Security policy](SECURITY.md)**
+
 [![CI](https://github.com/shkrwnd/claude-jail/actions/workflows/ci.yml/badge.svg)](https://github.com/shkrwnd/claude-jail/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claude Jail — Secure Claude Code Sandbox</title>
+  <meta name="description" content="Run Claude Code and other AI coding agents in a hardened Docker sandbox with credential isolation, command authorization, egress controls, and audit logging.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://shkrwnd.github.io/claude-jail/">
+  <meta property="og:title" content="Claude Jail — Secure Claude Code Sandbox">
+  <meta property="og:description" content="A hardened Docker sandbox for Claude Code with host-side authorization, zero credentials in the container, egress controls, and audit logging.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://shkrwnd.github.io/claude-jail/">
+  <meta name="twitter:card" content="summary">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    "name": "Claude Jail",
+    "description": "A secure Docker sandbox for Claude Code and other AI coding agents with credential isolation, command authorization, egress controls, and audit logging.",
+    "codeRepository": "https://github.com/shkrwnd/claude-jail",
+    "url": "https://shkrwnd.github.io/claude-jail/",
+    "license": "https://www.apache.org/licenses/LICENSE-2.0",
+    "programmingLanguage": ["Python", "Shell", "Dockerfile"]
+  }
+  </script>
+  <style>
+    :root { color-scheme: dark; --bg:#090d14; --panel:#111827; --text:#e5e7eb; --muted:#9ca3af; --accent:#67e8f9; --line:#263244; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:radial-gradient(circle at 50% -20%,#163047 0,var(--bg) 42%); color:var(--text); font:16px/1.65 ui-sans-serif,system-ui,-apple-system,sans-serif; }
+    main { max-width:980px; margin:auto; padding:72px 24px; }
+    .eyebrow { color:var(--accent); font-weight:700; letter-spacing:.12em; text-transform:uppercase; font-size:.78rem; }
+    h1 { max-width:760px; margin:.35rem 0 1rem; font-size:clamp(3rem,8vw,6.6rem); line-height:.94; letter-spacing:-.055em; }
+    .lead { max-width:720px; color:#cbd5e1; font-size:1.25rem; }
+    .actions { display:flex; flex-wrap:wrap; gap:12px; margin:30px 0 58px; }
+    a.button { padding:11px 17px; border:1px solid var(--line); border-radius:9px; color:var(--text); text-decoration:none; font-weight:650; }
+    a.primary { background:var(--accent); border-color:var(--accent); color:#06202a; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; }
+    article { background:color-mix(in srgb,var(--panel) 86%,transparent); border:1px solid var(--line); border-radius:12px; padding:22px; }
+    article h2 { margin:0 0 7px; font-size:1rem; }
+    article p { margin:0; color:var(--muted); }
+    pre { margin-top:44px; padding:18px; overflow:auto; background:#05080d; border:1px solid var(--line); border-radius:12px; color:#bae6fd; }
+    footer { margin-top:58px; color:var(--muted); font-size:.9rem; }
+    footer a { color:var(--accent); }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">Agent security infrastructure</div>
+    <h1>Claude Code, securely jailed.</h1>
+    <p class="lead">Claude Jail runs AI coding agents inside a hardened Docker container while sensitive CLI operations are authorized and executed by a trusted host-side broker. Credentials never enter the container.</p>
+    <div class="actions">
+      <a class="button primary" href="https://github.com/shkrwnd/claude-jail">View on GitHub</a>
+      <a class="button" href="architecture.md">Read the architecture</a>
+      <a class="button" href="https://github.com/shkrwnd/claude-jail/blob/main/SECURITY.md">Security model</a>
+    </div>
+    <section class="grid" aria-label="Features">
+      <article><h2>Zero guest credentials</h2><p>Cloud, GitHub, and infrastructure secrets remain on the trusted host.</p></article>
+      <article><h2>Policy-controlled commands</h2><p>Broker git, aws, gh, kubectl, terraform, psql, and other CLIs through pluggable authorization.</p></article>
+      <article><h2>Restricted egress</h2><p>An allowlisted HTTPS proxy blocks arbitrary outbound connections from the agent.</p></article>
+      <article><h2>Auditable execution</h2><p>Record authorized commands, decisions, outputs, and exit status outside the container.</p></article>
+    </section>
+    <pre><code>git clone https://github.com/shkrwnd/claude-jail.git
+cd claude-jail
+./start.sh</code></pre>
+    <footer>Apache-2.0 licensed open source by <a href="https://github.com/shkrwnd">Shikhar Tiwari</a>.</footer>
+  </main>
+</body>
+</html>
