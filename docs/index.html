@@ -13,57 +13,222 @@
   <meta property="og:url" content="https://shkrwnd.github.io/claude-jail/">
   <meta name="twitter:card" content="summary">
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareSourceCode",
-    "name": "Claude Jail",
-    "description": "A secure Docker sandbox for Claude Code and other AI coding agents with credential isolation, command authorization, egress controls, and audit logging.",
-    "codeRepository": "https://github.com/shkrwnd/claude-jail",
-    "url": "https://shkrwnd.github.io/claude-jail/",
-    "license": "https://www.apache.org/licenses/LICENSE-2.0",
-    "programmingLanguage": ["Python", "Shell", "Dockerfile"]
-  }
+  {"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Claude Jail","description":"A secure Docker sandbox for Claude Code and other AI coding agents with credential isolation, command authorization, egress controls, and audit logging.","codeRepository":"https://github.com/shkrwnd/claude-jail","url":"https://shkrwnd.github.io/claude-jail/","license":"https://www.apache.org/licenses/LICENSE-2.0","programmingLanguage":["Python","Shell","Dockerfile"]}
   </script>
   <style>
-    :root { color-scheme: dark; --bg:#090d14; --panel:#111827; --text:#e5e7eb; --muted:#9ca3af; --accent:#67e8f9; --line:#263244; }
-    * { box-sizing: border-box; }
-    body { margin:0; background:radial-gradient(circle at 50% -20%,#163047 0,var(--bg) 42%); color:var(--text); font:16px/1.65 ui-sans-serif,system-ui,-apple-system,sans-serif; }
-    main { max-width:980px; margin:auto; padding:72px 24px; }
-    .eyebrow { color:var(--accent); font-weight:700; letter-spacing:.12em; text-transform:uppercase; font-size:.78rem; }
-    h1 { max-width:760px; margin:.35rem 0 1rem; font-size:clamp(3rem,8vw,6.6rem); line-height:.94; letter-spacing:-.055em; }
-    .lead { max-width:720px; color:#cbd5e1; font-size:1.25rem; }
-    .actions { display:flex; flex-wrap:wrap; gap:12px; margin:30px 0 58px; }
-    a.button { padding:11px 17px; border:1px solid var(--line); border-radius:9px; color:var(--text); text-decoration:none; font-weight:650; }
-    a.primary { background:var(--accent); border-color:var(--accent); color:#06202a; }
-    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; }
-    article { background:color-mix(in srgb,var(--panel) 86%,transparent); border:1px solid var(--line); border-radius:12px; padding:22px; }
-    article h2 { margin:0 0 7px; font-size:1rem; }
-    article p { margin:0; color:var(--muted); }
-    pre { margin-top:44px; padding:18px; overflow:auto; background:#05080d; border:1px solid var(--line); border-radius:12px; color:#bae6fd; }
-    footer { margin-top:58px; color:var(--muted); font-size:.9rem; }
-    footer a { color:var(--accent); }
+    :root {
+      --paper:#f1efe7; --ink:#11110f; --muted:#625f56; --line:#b6b1a5;
+      --orange:#ff5c1a; --acid:#d6ff43; --white:#fffdf6; --black:#090908;
+    }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; overflow-x:hidden; color:var(--ink); background:var(--paper); font-family:Georgia,"Times New Roman",serif; }
+    a { color:inherit; }
+    .mono, nav, .eyebrow, .button, .tag, pre, .number, .label, th, footer { font-family:"Courier New",Courier,monospace; }
+    .shell { width:min(1240px,calc(100% - 32px)); margin:auto; }
+    nav { display:flex; justify-content:space-between; align-items:center; min-height:76px; border-bottom:1px solid var(--ink); font-size:12px; text-transform:uppercase; letter-spacing:.08em; }
+    .brand { display:flex; align-items:center; gap:11px; font-weight:700; text-decoration:none; }
+    .brand-mark { width:30px; height:30px; display:grid; place-items:center; background:var(--ink); color:var(--acid); border-radius:50%; font-size:15px; }
+    .nav-links { display:flex; gap:24px; align-items:center; }
+    .nav-links a { text-decoration:none; }
+    .nav-links a:hover { text-decoration:underline; text-underline-offset:4px; }
+    .github { border:1px solid var(--ink); padding:10px 14px; box-shadow:3px 3px 0 var(--ink); background:var(--white); }
+
+    .hero { position:relative; display:grid; grid-template-columns:1.08fr .92fr; gap:70px; padding:90px 0 80px; min-height:700px; align-items:center; }
+    .hero::before { content:""; position:absolute; width:220px; height:220px; border:1px solid var(--line); border-radius:50%; left:-120px; top:25px; }
+    .eyebrow { display:flex; gap:10px; align-items:center; margin-bottom:26px; font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; }
+    .eyebrow::before { content:""; width:42px; height:7px; background:var(--orange); }
+    h1 { margin:0; max-width:720px; font-size:clamp(64px,8.5vw,132px); font-weight:400; line-height:.78; letter-spacing:-.065em; }
+    h1 em { display:block; margin-left:13%; color:var(--orange); font-style:italic; }
+    .hero-copy { max-width:630px; margin:38px 0 0 13%; font-size:19px; line-height:1.55; }
+    .hero-actions { display:flex; gap:12px; flex-wrap:wrap; margin:32px 0 0 13%; }
+    .button { display:inline-flex; gap:10px; align-items:center; padding:14px 18px; border:1px solid var(--ink); text-decoration:none; text-transform:uppercase; letter-spacing:.04em; font-size:12px; font-weight:700; transition:.18s ease; }
+    .button.primary { background:var(--ink); color:var(--white); }
+    .button:hover { transform:translate(-2px,-2px); box-shadow:4px 4px 0 var(--orange); }
+
+    .terminal { position:relative; background:var(--black); color:#ecebdc; border:1px solid var(--black); box-shadow:18px 18px 0 var(--orange); transform:rotate(1deg); }
+    .terminal-head { display:flex; justify-content:space-between; padding:13px 16px; border-bottom:1px solid #3d3d36; color:#a8a69a; font:10px/1 "Courier New",monospace; text-transform:uppercase; letter-spacing:.1em; }
+    .terminal-body { padding:27px 26px 30px; font:13px/1.75 "Courier New",monospace; min-height:390px; }
+    .prompt { color:var(--acid); } .dim { color:#76756c; } .ok { color:#91e397; } .deny { color:#ff7657; }
+    .terminal-line { opacity:0; animation:arrive .45s ease forwards; }
+    .terminal-line:nth-child(2){animation-delay:.3s}.terminal-line:nth-child(3){animation-delay:.65s}.terminal-line:nth-child(4){animation-delay:1s}.terminal-line:nth-child(5){animation-delay:1.35s}.terminal-line:nth-child(6){animation-delay:1.7s}.terminal-line:nth-child(7){animation-delay:2.05s}.terminal-line:nth-child(8){animation-delay:2.4s}
+    @keyframes arrive { to { opacity:1; } }
+    .stamp { position:absolute; right:-25px; top:-34px; z-index:2; display:grid; place-items:center; width:96px; height:96px; border:3px solid var(--orange); border-radius:50%; color:var(--orange); background:var(--paper); font:700 11px/1.2 "Courier New",monospace; text-align:center; text-transform:uppercase; transform:rotate(12deg); }
+
+    .ticker { overflow:hidden; background:var(--acid); border-block:1px solid var(--ink); }
+    .ticker-track { display:flex; width:max-content; animation:scroll 28s linear infinite; }
+    .ticker span { padding:13px 30px; font:700 11px "Courier New",monospace; text-transform:uppercase; letter-spacing:.12em; }
+    @keyframes scroll { to { transform:translateX(-50%); } }
+
+    section { padding:100px 0; }
+    .section-head { display:grid; grid-template-columns:170px 1fr; gap:30px; margin-bottom:54px; align-items:start; }
+    .number { color:var(--orange); font-size:12px; font-weight:700; }
+    h2 { margin:0; max-width:800px; font-size:clamp(42px,6vw,80px); line-height:.96; font-weight:400; letter-spacing:-.045em; }
+    .subhead { max-width:650px; margin:22px 0 0; color:var(--muted); font-size:18px; line-height:1.6; }
+
+    .architecture { border-top:1px solid var(--ink); }
+    .flow { display:grid; grid-template-columns:1fr 70px 1fr 70px 1fr; align-items:stretch; }
+    .flow-card { position:relative; min-height:310px; padding:28px; border:1px solid var(--ink); background:var(--white); }
+    .flow-card.dark { background:var(--ink); color:var(--white); }
+    .flow-card.accent { background:var(--orange); }
+    .flow-arrow { display:grid; place-items:center; font:30px "Courier New",monospace; }
+    .flow-card .label { font-size:10px; letter-spacing:.14em; text-transform:uppercase; }
+    .flow-card h3 { margin:55px 0 14px; font-size:28px; font-weight:400; }
+    .flow-card p { color:inherit; opacity:.7; line-height:1.55; }
+    .flow-card ul { padding:0; margin:28px 0 0; list-style:none; font:12px/1.8 "Courier New",monospace; }
+    .flow-card li::before { content:"— "; }
+
+    .features { background:var(--ink); color:var(--white); }
+    .features .subhead { color:#aaa89f; }
+    .feature-grid { display:grid; grid-template-columns:repeat(2,1fr); border-top:1px solid #46463f; border-left:1px solid #46463f; }
+    .feature { min-height:250px; padding:34px; border-right:1px solid #46463f; border-bottom:1px solid #46463f; transition:.2s ease; }
+    .feature:hover { background:#1c1c18; }
+    .feature .icon { display:grid; place-items:center; width:44px; height:44px; background:var(--acid); color:var(--ink); font:700 17px "Courier New",monospace; }
+    .feature h3 { margin:38px 0 12px; font-size:25px; font-weight:400; }
+    .feature p { margin:0; max-width:470px; color:#aaa89f; line-height:1.55; }
+
+    .comparison table { width:100%; border-collapse:collapse; background:var(--white); border:1px solid var(--ink); }
+    th, td { padding:20px; border-bottom:1px solid var(--line); text-align:left; }
+    th { font-size:10px; text-transform:uppercase; letter-spacing:.1em; background:#dedbd1; }
+    th:last-child { background:var(--orange); color:var(--ink); }
+    td { font-size:15px; } td:not(:first-child) { font-family:"Courier New",monospace; font-size:12px; }
+    tr:last-child td { border-bottom:0; }
+    .yes { font-weight:700; } .yes::before { content:"● "; color:#2b8a3e; } .no::before { content:"× "; color:#b22d18; }
+
+    .quickstart { display:grid; grid-template-columns:.8fr 1.2fr; gap:70px; padding-bottom:120px; }
+    .quickstart h2 { font-size:clamp(45px,6vw,78px); }
+    .steps { counter-reset:steps; border-top:1px solid var(--ink); }
+    .step { counter-increment:steps; display:grid; grid-template-columns:50px 1fr; gap:12px; padding:25px 0; border-bottom:1px solid var(--line); }
+    .step::before { content:"0" counter(steps); color:var(--orange); font:700 12px "Courier New",monospace; }
+    .step strong { display:block; margin-bottom:9px; font-weight:400; font-size:20px; }
+    .step code { display:block; padding:13px; background:var(--ink); color:var(--acid); font:12px/1.5 "Courier New",monospace; overflow:auto; }
+
+    .final-cta { margin-bottom:50px; display:grid; grid-template-columns:1fr auto; gap:30px; align-items:end; padding:48px; background:var(--orange); border:1px solid var(--ink); box-shadow:10px 10px 0 var(--ink); }
+    .final-cta h2 { max-width:700px; }
+    .final-cta .button { background:var(--white); white-space:nowrap; }
+    footer { display:flex; justify-content:space-between; gap:30px; padding:32px 0 45px; border-top:1px solid var(--ink); color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:.08em; }
+
+    @media (max-width:900px) {
+      .hero { grid-template-columns:1fr; gap:70px; padding-top:60px; }
+      .hero-copy,.hero-actions { margin-left:0; }
+      .terminal { width:calc(100% - 18px); }
+      .flow { grid-template-columns:1fr; gap:0; } .flow-arrow { height:60px; transform:rotate(90deg); }
+      .quickstart { grid-template-columns:1fr; gap:45px; }
+    }
+    @media (max-width:650px) {
+      .shell { width:min(100% - 22px,1240px); }
+      nav { min-height:62px; } .nav-links a:not(.github) { display:none; }
+      .hero { min-height:auto; padding:55px 0 70px; }
+      h1 { font-size:61px; } h1 em { margin-left:0; }
+      .hero-copy { font-size:17px; }
+      section { padding:72px 0; }
+      .section-head { grid-template-columns:1fr; gap:12px; }
+      .feature-grid { grid-template-columns:1fr; }
+      .comparison { overflow-x:auto; }
+      table { min-width:680px; }
+      .final-cta { grid-template-columns:1fr; padding:30px; }
+      footer { flex-direction:column; }
+    }
+    @media (prefers-reduced-motion:reduce) { html{scroll-behavior:auto}.ticker-track,.terminal-line{animation:none;opacity:1}.button{transition:none} }
   </style>
 </head>
 <body>
-  <main>
-    <div class="eyebrow">Agent security infrastructure</div>
-    <h1>Claude Code, securely jailed.</h1>
-    <p class="lead">Claude Jail runs AI coding agents inside a hardened Docker container while sensitive CLI operations are authorized and executed by a trusted host-side broker. Credentials never enter the container.</p>
-    <div class="actions">
-      <a class="button primary" href="https://github.com/shkrwnd/claude-jail">View on GitHub</a>
-      <a class="button" href="architecture.md">Read the architecture</a>
-      <a class="button" href="https://github.com/shkrwnd/claude-jail/blob/main/SECURITY.md">Security model</a>
-    </div>
-    <section class="grid" aria-label="Features">
-      <article><h2>Zero guest credentials</h2><p>Cloud, GitHub, and infrastructure secrets remain on the trusted host.</p></article>
-      <article><h2>Policy-controlled commands</h2><p>Broker git, aws, gh, kubectl, terraform, psql, and other CLIs through pluggable authorization.</p></article>
-      <article><h2>Restricted egress</h2><p>An allowlisted HTTPS proxy blocks arbitrary outbound connections from the agent.</p></article>
-      <article><h2>Auditable execution</h2><p>Record authorized commands, decisions, outputs, and exit status outside the container.</p></article>
+  <div class="shell">
+    <nav aria-label="Primary navigation">
+      <a class="brand" href="#top"><span class="brand-mark">CJ</span> Claude Jail</a>
+      <div class="nav-links">
+        <a href="#architecture">Architecture</a><a href="#security">Security</a><a href="#start">Quick start</a>
+        <a class="github" href="https://github.com/shkrwnd/claude-jail">GitHub ↗</a>
+      </div>
+    </nav>
+
+    <main id="top">
+      <header class="hero">
+        <div>
+          <div class="eyebrow">Agent containment system · Apache 2.0</div>
+          <h1>Let Claude <em>loose.</em></h1>
+          <p class="hero-copy">A hardened Docker sandbox with zero credentials inside. Every powerful CLI action is intercepted, authorized, executed, and logged by a trusted host-side broker.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#start">Deploy the jail <span>↓</span></a>
+            <a class="button" href="https://github.com/shkrwnd/claude-jail">Inspect source <span>↗</span></a>
+          </div>
+        </div>
+        <div class="terminal" aria-label="Example Claude Jail command authorization log">
+          <div class="stamp">Host<br>credentials<br>never enter</div>
+          <div class="terminal-head"><span>agent-exec / audit stream</span><span>connected ●</span></div>
+          <div class="terminal-body">
+            <div class="terminal-line"><span class="dim">$</span> claude --dangerously-skip-permissions</div>
+            <div class="terminal-line"><span class="prompt">claude ›</span> I'll inspect the deployment.</div>
+            <div class="terminal-line"><span class="dim">→ broker</span> kubectl get pods -n prod</div>
+            <div class="terminal-line"><span class="ok">✓ APPROVED</span> static_policy · 38ms</div>
+            <div class="terminal-line"><span class="dim">→ broker</span> terraform destroy -auto-approve</div>
+            <div class="terminal-line"><span class="deny">✕ DENIED</span> destructive operation blocked</div>
+            <div class="terminal-line"><span class="dim">→ audit</span> decision recorded · credentials revoked</div>
+            <div class="terminal-line"><br><span class="prompt">jail ›</span> blast radius contained_</div>
+          </div>
+        </div>
+      </header>
+    </main>
+  </div>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker-track">
+    <span>Zero guest credentials</span><span>Fail-closed policy</span><span>Restricted egress</span><span>Complete audit trail</span><span>Non-root container</span>
+    <span>Zero guest credentials</span><span>Fail-closed policy</span><span>Restricted egress</span><span>Complete audit trail</span><span>Non-root container</span>
+  </div></div>
+
+  <div class="shell">
+    <section class="architecture" id="architecture">
+      <div class="section-head"><div class="number">01 / TRUST BOUNDARY</div><div><h2>The agent gets tools.<br>Not your identity.</h2><p class="subhead">Docker contains files and processes. Claude Jail adds the missing control plane for credentials and real-world side effects.</p></div></div>
+      <div class="flow">
+        <article class="flow-card dark"><div class="label">Untrusted zone</div><h3>Claude container</h3><p>Claude works freely against only the folders you explicitly mount.</p><ul><li>no cloud credentials</li><li>non-root UID 1000</li><li>capabilities dropped</li></ul></article>
+        <div class="flow-arrow">→</div>
+        <article class="flow-card accent"><div class="label">Control plane</div><h3>Command broker</h3><p>CLI wrappers route sensitive actions through host-owned policy.</p><ul><li>authenticate request</li><li>authorize command</li><li>issue temporary access</li></ul></article>
+        <div class="flow-arrow">→</div>
+        <article class="flow-card"><div class="label">Trusted zone</div><h3>Host execution</h3><p>Approved actions run where credentials live, then return sanitized output.</p><ul><li>credentials stay home</li><li>stdout / stderr returned</li><li>every action logged</li></ul></article>
+      </div>
     </section>
-    <pre><code>git clone https://github.com/shkrwnd/claude-jail.git
-cd claude-jail
-./start.sh</code></pre>
-    <footer>Apache-2.0 licensed open source by <a href="https://github.com/shkrwnd">Shikhar Tiwari</a>.</footer>
-  </main>
+  </div>
+
+  <section class="features" id="security">
+    <div class="shell">
+      <div class="section-head"><div class="number">02 / DEFENSES</div><div><h2>Assume the agent<br>will test the walls.</h2><p class="subhead">The policy and secrets live outside the container, so deleting wrappers or calling the broker directly gains nothing.</p></div></div>
+      <div class="feature-grid">
+        <article class="feature"><div class="icon">00</div><h3>Credential isolation</h3><p>Never mount ~/.aws, ~/.ssh, ~/.kube, Docker config, or GitHub credentials. Temporary credentials can be scoped per approved action.</p></article>
+        <article class="feature"><div class="icon">01</div><h3>Pluggable authorization</h3><p>Use a fail-closed static policy, webhook approvals, OPA, Slack, or your own Python backend without rebuilding the container.</p></article>
+        <article class="feature"><div class="icon">10</div><h3>Egress allowlisting</h3><p>An internal-only network and filtered HTTPS sidecar prevent arbitrary outbound traffic and credential exfiltration.</p></article>
+        <article class="feature"><div class="icon">11</div><h3>Auditable execution</h3><p>Capture the tool, full command, reason, repository, branch, decision, output, exit status, and duration on the trusted host.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <div class="shell">
+    <section class="comparison">
+      <div class="section-head"><div class="number">03 / WHY</div><div><h2>Containment is only<br>half the system.</h2></div></div>
+      <table>
+        <thead><tr><th>Control</th><th>Plain Docker</th><th>Claude Jail</th></tr></thead>
+        <tbody>
+          <tr><td>Filesystem / process isolation</td><td class="yes">Included</td><td class="yes">Hardened</td></tr>
+          <tr><td>Credentials kept outside guest</td><td class="no">Usually mounted</td><td class="yes">Always</td></tr>
+          <tr><td>Per-command authorization</td><td class="no">None</td><td class="yes">Pluggable</td></tr>
+          <tr><td>Temporary scoped credentials</td><td class="no">None</td><td class="yes">Supported</td></tr>
+          <tr><td>Domain-filtered egress</td><td class="no">Manual</td><td class="yes">Built in</td></tr>
+          <tr><td>Central audit trail</td><td class="no">Container logs</td><td class="yes">Decision-level</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="quickstart" id="start">
+      <div><div class="eyebrow">Five-minute setup</div><h2>Build the cage.<br>Open the door.</h2><p class="subhead">Docker and Git are the only host requirements. Claude Code is installed inside the image.</p></div>
+      <div class="steps">
+        <div class="step"><div><strong>Clone the repository</strong><code>git clone https://github.com/shkrwnd/claude-jail.git<br>cd claude-jail</code></div></div>
+        <div class="step"><div><strong>Mount only the workspaces Claude needs</strong><code># deploy/docker-compose.override.yml<br>/path/to/project:/workspace/project:rw</code></div></div>
+        <div class="step"><div><strong>Choose an authorization policy</strong><code>AUTH_BACKEND=server.auth_backends.static_policy.StaticPolicyBackend</code></div></div>
+        <div class="step"><div><strong>Start the jail</strong><code>./start.sh<br># then, inside the container:<br>claude</code></div></div>
+      </div>
+    </section>
+
+    <aside class="final-cta"><div><div class="eyebrow">Open source · inspect every boundary</div><h2>Give the agent autonomy.<br>Keep the authority.</h2></div><a class="button" href="https://github.com/shkrwnd/claude-jail">View on GitHub ↗</a></aside>
+    <footer><span>Claude Jail / Apache-2.0</span><span>Built by <a href="https://github.com/shkrwnd">Shikhar Tiwari</a></span><span>Security model in repository</span></footer>
+  </div>
 </body>
 </html>
