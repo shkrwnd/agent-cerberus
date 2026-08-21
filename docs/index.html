@@ -3,232 +3,618 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Claude Jail — Secure Claude Code Sandbox</title>
+  <title>Claude Jail — Secure AI Agent Sandbox</title>
   <meta name="description" content="Run Claude Code and other AI coding agents in a hardened Docker sandbox with credential isolation, command authorization, egress controls, and audit logging.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://shkrwnd.github.io/claude-jail/">
-  <meta property="og:title" content="Claude Jail — Secure Claude Code Sandbox">
+  <meta property="og:title" content="Claude Jail — Secure AI Agent Sandbox">
   <meta property="og:description" content="A hardened Docker sandbox for Claude Code with host-side authorization, zero credentials in the container, egress controls, and audit logging.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://shkrwnd.github.io/claude-jail/">
-  <meta name="twitter:card" content="summary">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Claude Jail","description":"A secure Docker sandbox for Claude Code and other AI coding agents with credential isolation, command authorization, egress controls, and audit logging.","codeRepository":"https://github.com/shkrwnd/claude-jail","url":"https://shkrwnd.github.io/claude-jail/","license":"https://www.apache.org/licenses/LICENSE-2.0","programmingLanguage":["Python","Shell","Dockerfile"]}
   </script>
   <style>
     :root {
-      --paper:#f1efe7; --ink:#11110f; --muted:#625f56; --line:#b6b1a5;
-      --orange:#ff5c1a; --acid:#d6ff43; --white:#fffdf6; --black:#090908;
+      --bg: #09090b;
+      --surface: #131316;
+      --surface-raised: #19191d;
+      --border: #27272a;
+      --border-subtle: #1e1e22;
+      --text: #fafafa;
+      --text-2: #a1a1aa;
+      --text-3: #71717a;
+      --text-4: #52525b;
+      --green: #4ade80;
+      --red: #f87171;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --max-w: 1080px;
     }
-    * { box-sizing:border-box; }
-    html { scroll-behavior:smooth; }
-    body { margin:0; overflow-x:hidden; color:var(--ink); background:var(--paper); font-family:Georgia,"Times New Roman",serif; }
-    a { color:inherit; }
-    .mono, nav, .eyebrow, .button, .tag, pre, .number, .label, th, footer { font-family:"Courier New",Courier,monospace; }
-    .shell { width:min(1240px,calc(100% - 32px)); margin:auto; }
-    nav { display:flex; justify-content:space-between; align-items:center; min-height:76px; border-bottom:1px solid var(--ink); font-size:12px; text-transform:uppercase; letter-spacing:.08em; }
-    .brand { display:flex; align-items:center; gap:11px; font-weight:700; text-decoration:none; }
-    .brand-mark { width:30px; height:30px; display:grid; place-items:center; background:var(--ink); color:var(--acid); border-radius:50%; font-size:15px; }
-    .nav-links { display:flex; gap:24px; align-items:center; }
-    .nav-links a { text-decoration:none; }
-    .nav-links a:hover { text-decoration:underline; text-underline-offset:4px; }
-    .github { border:1px solid var(--ink); padding:10px 14px; box-shadow:3px 3px 0 var(--ink); background:var(--white); }
-
-    .hero { position:relative; display:grid; grid-template-columns:1.08fr .92fr; gap:70px; padding:90px 0 80px; min-height:700px; align-items:center; }
-    .hero::before { content:""; position:absolute; width:220px; height:220px; border:1px solid var(--line); border-radius:50%; left:-120px; top:25px; }
-    .eyebrow { display:flex; gap:10px; align-items:center; margin-bottom:26px; font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; }
-    .eyebrow::before { content:""; width:42px; height:7px; background:var(--orange); }
-    h1 { margin:0; max-width:720px; font-size:clamp(64px,8.5vw,132px); font-weight:400; line-height:.78; letter-spacing:-.065em; }
-    h1 em { display:block; margin-left:13%; color:var(--orange); font-style:italic; }
-    .hero-copy { max-width:630px; margin:38px 0 0 13%; font-size:19px; line-height:1.55; }
-    .hero-actions { display:flex; gap:12px; flex-wrap:wrap; margin:32px 0 0 13%; }
-    .button { display:inline-flex; gap:10px; align-items:center; padding:14px 18px; border:1px solid var(--ink); text-decoration:none; text-transform:uppercase; letter-spacing:.04em; font-size:12px; font-weight:700; transition:.18s ease; }
-    .button.primary { background:var(--ink); color:var(--white); }
-    .button:hover { transform:translate(-2px,-2px); box-shadow:4px 4px 0 var(--orange); }
-
-    .terminal { position:relative; background:var(--black); color:#ecebdc; border:1px solid var(--black); box-shadow:18px 18px 0 var(--orange); transform:rotate(1deg); }
-    .terminal-head { display:flex; justify-content:space-between; padding:13px 16px; border-bottom:1px solid #3d3d36; color:#a8a69a; font:10px/1 "Courier New",monospace; text-transform:uppercase; letter-spacing:.1em; }
-    .terminal-body { padding:27px 26px 30px; font:13px/1.75 "Courier New",monospace; min-height:390px; }
-    .prompt { color:var(--acid); } .dim { color:#76756c; } .ok { color:#91e397; } .deny { color:#ff7657; }
-    .terminal-line { opacity:0; animation:arrive .45s ease forwards; }
-    .terminal-line:nth-child(2){animation-delay:.3s}.terminal-line:nth-child(3){animation-delay:.65s}.terminal-line:nth-child(4){animation-delay:1s}.terminal-line:nth-child(5){animation-delay:1.35s}.terminal-line:nth-child(6){animation-delay:1.7s}.terminal-line:nth-child(7){animation-delay:2.05s}.terminal-line:nth-child(8){animation-delay:2.4s}
-    @keyframes arrive { to { opacity:1; } }
-    .stamp { position:absolute; right:-25px; top:-34px; z-index:2; display:grid; place-items:center; width:96px; height:96px; border:3px solid var(--orange); border-radius:50%; color:var(--orange); background:var(--paper); font:700 11px/1.2 "Courier New",monospace; text-align:center; text-transform:uppercase; transform:rotate(12deg); }
-
-    .ticker { overflow:hidden; background:var(--acid); border-block:1px solid var(--ink); }
-    .ticker-track { display:flex; width:max-content; animation:scroll 28s linear infinite; }
-    .ticker span { padding:13px 30px; font:700 11px "Courier New",monospace; text-transform:uppercase; letter-spacing:.12em; }
-    @keyframes scroll { to { transform:translateX(-50%); } }
-
-    section { padding:100px 0; }
-    .section-head { display:grid; grid-template-columns:170px 1fr; gap:30px; margin-bottom:54px; align-items:start; }
-    .number { color:var(--orange); font-size:12px; font-weight:700; }
-    h2 { margin:0; max-width:800px; font-size:clamp(42px,6vw,80px); line-height:.96; font-weight:400; letter-spacing:-.045em; }
-    .subhead { max-width:650px; margin:22px 0 0; color:var(--muted); font-size:18px; line-height:1.6; }
-
-    .architecture { border-top:1px solid var(--ink); }
-    .flow { display:grid; grid-template-columns:1fr 70px 1fr 70px 1fr; align-items:stretch; }
-    .flow-card { position:relative; min-height:310px; padding:28px; border:1px solid var(--ink); background:var(--white); }
-    .flow-card.dark { background:var(--ink); color:var(--white); }
-    .flow-card.accent { background:var(--orange); }
-    .flow-arrow { display:grid; place-items:center; font:30px "Courier New",monospace; }
-    .flow-card .label { font-size:10px; letter-spacing:.14em; text-transform:uppercase; }
-    .flow-card h3 { margin:55px 0 14px; font-size:28px; font-weight:400; }
-    .flow-card p { color:inherit; opacity:.7; line-height:1.55; }
-    .flow-card ul { padding:0; margin:28px 0 0; list-style:none; font:12px/1.8 "Courier New",monospace; }
-    .flow-card li::before { content:"— "; }
-
-    .features { background:var(--ink); color:var(--white); }
-    .features .subhead { color:#aaa89f; }
-    .feature-grid { display:grid; grid-template-columns:repeat(2,1fr); border-top:1px solid #46463f; border-left:1px solid #46463f; }
-    .feature { min-height:250px; padding:34px; border-right:1px solid #46463f; border-bottom:1px solid #46463f; transition:.2s ease; }
-    .feature:hover { background:#1c1c18; }
-    .feature .icon { display:grid; place-items:center; width:44px; height:44px; background:var(--acid); color:var(--ink); font:700 17px "Courier New",monospace; }
-    .feature h3 { margin:38px 0 12px; font-size:25px; font-weight:400; }
-    .feature p { margin:0; max-width:470px; color:#aaa89f; line-height:1.55; }
-
-    .comparison table { width:100%; border-collapse:collapse; background:var(--white); border:1px solid var(--ink); }
-    th, td { padding:20px; border-bottom:1px solid var(--line); text-align:left; }
-    th { font-size:10px; text-transform:uppercase; letter-spacing:.1em; background:#dedbd1; }
-    th:last-child { background:var(--orange); color:var(--ink); }
-    td { font-size:15px; } td:not(:first-child) { font-family:"Courier New",monospace; font-size:12px; }
-    tr:last-child td { border-bottom:0; }
-    .yes { font-weight:700; } .yes::before { content:"● "; color:#2b8a3e; } .no::before { content:"× "; color:#b22d18; }
-
-    .quickstart { display:grid; grid-template-columns:.8fr 1.2fr; gap:70px; padding-bottom:120px; }
-    .quickstart h2 { font-size:clamp(45px,6vw,78px); }
-    .steps { counter-reset:steps; border-top:1px solid var(--ink); }
-    .step { counter-increment:steps; display:grid; grid-template-columns:50px 1fr; gap:12px; padding:25px 0; border-bottom:1px solid var(--line); }
-    .step::before { content:"0" counter(steps); color:var(--orange); font:700 12px "Courier New",monospace; }
-    .step strong { display:block; margin-bottom:9px; font-weight:400; font-size:20px; }
-    .step code { display:block; padding:13px; background:var(--ink); color:var(--acid); font:12px/1.5 "Courier New",monospace; overflow:auto; }
-
-    .final-cta { margin-bottom:50px; display:grid; grid-template-columns:1fr auto; gap:30px; align-items:end; padding:48px; background:var(--orange); border:1px solid var(--ink); box-shadow:10px 10px 0 var(--ink); }
-    .final-cta h2 { max-width:700px; }
-    .final-cta .button { background:var(--white); white-space:nowrap; }
-    footer { display:flex; justify-content:space-between; gap:30px; padding:32px 0 45px; border-top:1px solid var(--ink); color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:.08em; }
-
-    @media (max-width:900px) {
-      .hero { grid-template-columns:1fr; gap:70px; padding-top:60px; }
-      .hero-copy,.hero-actions { margin-left:0; }
-      .terminal { width:calc(100% - 18px); }
-      .flow { grid-template-columns:1fr; gap:0; } .flow-arrow { height:60px; transform:rotate(90deg); }
-      .quickstart { grid-template-columns:1fr; gap:45px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'DM Sans', -apple-system, sans-serif;
+      line-height: 1.6; -webkit-font-smoothing: antialiased;
     }
-    @media (max-width:650px) {
-      .shell { width:min(100% - 22px,1240px); }
-      nav { min-height:62px; } .nav-links a:not(.github) { display:none; }
-      .hero { min-height:auto; padding:55px 0 70px; }
-      h1 { font-size:61px; } h1 em { margin-left:0; }
-      .hero-copy { font-size:17px; }
-      section { padding:72px 0; }
-      .section-head { grid-template-columns:1fr; gap:12px; }
-      .feature-grid { grid-template-columns:1fr; }
-      .comparison { overflow-x:auto; }
-      table { min-width:680px; }
-      .final-cta { grid-template-columns:1fr; padding:30px; }
-      footer { flex-direction:column; }
+    h1, h2, h3, h4 { font-family: 'Host Grotesk', 'DM Sans', sans-serif; }
+    a { color: inherit; text-decoration: none; }
+    code { font-family: 'JetBrains Mono', monospace; }
+    .wrap { max-width: var(--max-w); margin: 0 auto; padding: 0 32px; }
+
+    /* ─── Nav ─── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(9,9,11,0.85); backdrop-filter: blur(16px) saturate(1.2);
+      border-bottom: 1px solid var(--border-subtle);
     }
-    @media (prefers-reduced-motion:reduce) { html{scroll-behavior:auto}.ticker-track,.terminal-line{animation:none;opacity:1}.button{transition:none} }
+    .nav-inner {
+      display: flex; justify-content: space-between; align-items: center;
+      max-width: var(--max-w); margin: 0 auto; padding: 0 32px; height: 64px;
+    }
+    .brand { font-family: 'Host Grotesk', sans-serif; font-weight: 700; font-size: 17px; letter-spacing: -0.03em; }
+    .nav-links { display: flex; gap: 28px; align-items: center; }
+    .nav-links a { font-size: 14px; color: var(--text-3); transition: color 0.15s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-gh {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 16px; border-radius: 8px;
+      background: var(--surface-raised); border: 1px solid var(--border);
+      font-size: 13px; font-weight: 500; color: var(--text-2); transition: all 0.15s;
+    }
+    .nav-gh:hover { background: #222226; color: var(--text); }
+    .nav-gh svg { width: 15px; height: 15px; fill: currentColor; }
+
+    /* ─── Hero ─── */
+    .hero {
+      position: relative; padding: 120px 0 100px; text-align: center;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: -40%; left: 50%; transform: translateX(-50%);
+      width: 800px; height: 600px;
+      background: radial-gradient(ellipse, rgba(255,255,255,0.03) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px 6px 10px; border-radius: 100px;
+      background: var(--surface); border: 1px solid var(--border);
+      font-size: 13px; color: var(--text-2); margin-bottom: 40px;
+    }
+    .hero-badge .dot {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--green);
+      box-shadow: 0 0 8px rgba(74,222,128,0.4);
+    }
+    .hero h1 {
+      font-size: 64px; font-weight: 700; line-height: 1.05;
+      letter-spacing: -0.04em; max-width: 700px; margin: 0 auto;
+    }
+    .hero .subtitle {
+      margin: 24px auto 0; font-size: 18px; color: var(--text-2);
+      max-width: 520px; line-height: 1.75;
+    }
+    .hero-cta { display: flex; gap: 12px; justify-content: center; margin-top: 48px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 28px; border-radius: 10px;
+      font-size: 14px; font-weight: 500; transition: all 0.2s; border: none; cursor: pointer;
+    }
+    .btn-w { background: #fff; color: #09090b; }
+    .btn-w:hover { background: #e4e4e7; }
+    .btn-ghost {
+      background: transparent; color: var(--text-2);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { color: var(--text); border-color: var(--text-4); }
+    .btn-ghost svg { width: 16px; height: 16px; fill: currentColor; }
+
+    /* Install tabs */
+    .install-tabs { margin: 44px auto 0; max-width: 480px; }
+    .install-tab-bar {
+      display: flex; border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+    }
+    .install-tab-bar button {
+      flex: 1; padding: 10px 0; background: none; border: none;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+      color: var(--text-4); cursor: pointer; transition: color 0.15s;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+    }
+    .install-tab-bar button.active { color: var(--text); border-bottom-color: var(--text); }
+    .install-code {
+      padding: 16px 20px; background: var(--surface); border: 1px solid var(--border);
+      border-top: none; border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .install-code code { font-size: 13px; color: var(--text-2); }
+    .install-code .copy-btn {
+      background: none; border: none; color: var(--text-4); cursor: pointer;
+      padding: 4px; transition: color 0.15s;
+    }
+    .install-code .copy-btn:hover { color: var(--text); }
+
+    /* ─── Divider ─── */
+    .section-divider { border: none; border-top: 1px solid var(--border-subtle); margin: 0; }
+
+    /* ─── Formula / Concept ─── */
+    .concept {
+      padding: 100px 0; text-align: center;
+    }
+    .concept-equation {
+      font-family: 'Host Grotesk', sans-serif; font-size: 40px; font-weight: 700;
+      letter-spacing: -0.03em; margin-bottom: 32px; color: var(--text);
+    }
+    .concept-equation .op { color: var(--text-4); margin: 0 8px; }
+    .concept-body {
+      max-width: 580px; margin: 0 auto;
+      font-size: 16px; color: var(--text-2); line-height: 1.8;
+    }
+
+    /* ─── Pillars ─── */
+    .pillars { padding: 0 0 100px; }
+    .pillar-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    }
+    .pillar {
+      padding: 32px 28px; border-radius: var(--radius);
+      background: var(--surface); border: 1px solid var(--border-subtle);
+      transition: border-color 0.2s;
+    }
+    .pillar:hover { border-color: var(--border); }
+    .pillar-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--surface-raised); border: 1px solid var(--border);
+      display: grid; place-items: center; margin-bottom: 20px;
+      font-size: 20px; color: var(--text-2);
+    }
+    .pillar h3 {
+      font-size: 18px; font-weight: 600; margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+    .pillar p { font-size: 14px; color: var(--text-3); line-height: 1.7; }
+
+    /* ─── Sections ─── */
+    section { padding: 100px 0; }
+    .section-label {
+      font-size: 13px; font-weight: 500; color: var(--text-4);
+      text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: 40px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15;
+    }
+    .section-desc {
+      margin-top: 16px; font-size: 16px; color: var(--text-2);
+      max-width: 560px; line-height: 1.75;
+    }
+    .section-head { margin-bottom: 56px; }
+    .section-head-c { text-align: center; }
+    .section-head-c .section-desc { margin-left: auto; margin-right: auto; }
+
+    /* ─── Architecture ─── */
+    .arch-diagram {
+      border-radius: var(--radius); border: 1px solid var(--border-subtle);
+      background: var(--surface); overflow-x: auto;
+    }
+    .arch-diagram pre {
+      padding: 32px; font-size: 12px; line-height: 1.65; color: var(--text-2);
+    }
+    .arch-cards {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px;
+    }
+    .arch-card {
+      padding: 28px; border-radius: var(--radius);
+      background: var(--surface); border: 1px solid var(--border-subtle);
+      transition: border-color 0.2s;
+    }
+    .arch-card:hover { border-color: var(--border); }
+    .arch-card h3 {
+      font-size: 16px; font-weight: 600; margin-bottom: 16px; line-height: 1.4;
+    }
+    .arch-card h3 code {
+      font-size: 13px; padding: 2px 8px; border-radius: 6px;
+      background: var(--surface-raised); border: 1px solid var(--border);
+    }
+    .arch-card ol { padding-left: 18px; }
+    .arch-card li { font-size: 14px; color: var(--text-3); line-height: 1.85; padding: 2px 0; }
+    .arch-card code {
+      font-size: 12px; padding: 1px 6px; border-radius: 5px;
+      background: var(--surface-raised); border: 1px solid var(--border-subtle);
+    }
+
+    /* ─── Terminal ─── */
+    .terminal {
+      margin: 56px auto 0; max-width: 620px;
+      border-radius: var(--radius); overflow: hidden;
+      border: 1px solid var(--border-subtle); background: var(--surface);
+    }
+    .terminal-bar {
+      display: flex; align-items: center; gap: 7px;
+      padding: 14px 18px; border-bottom: 1px solid var(--border-subtle);
+    }
+    .terminal-dot { width: 11px; height: 11px; border-radius: 50%; }
+    .terminal-dot:nth-child(1) { background: #f87171; }
+    .terminal-dot:nth-child(2) { background: #fbbf24; }
+    .terminal-dot:nth-child(3) { background: #4ade80; }
+    .terminal-body {
+      padding: 24px; font-size: 13px; line-height: 2.1; color: var(--text-2);
+    }
+    .t-w { color: var(--text); }
+    .t-d { color: var(--text-4); }
+    .t-g { color: var(--green); font-weight: 500; }
+    .t-r { color: var(--red); font-weight: 500; }
+
+    /* ─── Security grid ─── */
+    .sec-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    }
+    .sec-card {
+      padding: 28px; border-radius: var(--radius);
+      background: var(--surface); border: 1px solid var(--border-subtle);
+      transition: border-color 0.2s;
+    }
+    .sec-card:hover { border-color: var(--border); }
+    .sec-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+    .sec-card p { font-size: 14px; color: var(--text-3); line-height: 1.7; }
+
+    /* ─── Comparison ─── */
+    .cmp-wrap {
+      border-radius: var(--radius); border: 1px solid var(--border-subtle);
+      overflow: hidden; background: var(--surface);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 15px 24px; text-align: left; border-bottom: 1px solid var(--border-subtle); }
+    th {
+      font-size: 12px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-4); background: var(--surface-raised);
+    }
+    td { color: var(--text-3); }
+    td:first-child { color: var(--text-2); font-weight: 500; }
+    td:last-child { color: var(--text); }
+    tr:last-child td { border-bottom: none; }
+    .y { color: var(--green); } .y::before { content: "\2713\00a0\00a0"; }
+    .n { color: var(--text-4); } .n::before { content: "\2717\00a0\00a0"; }
+
+    /* ─── Quick Start ─── */
+    .qs-layout {
+      display: grid; grid-template-columns: 1fr 1.2fr; gap: 72px; align-items: start;
+    }
+    .steps { display: flex; flex-direction: column; }
+    .step {
+      display: grid; grid-template-columns: 36px 1fr; gap: 16px;
+      padding: 24px 0; border-bottom: 1px solid var(--border-subtle);
+    }
+    .step:last-child { border-bottom: none; }
+    .step-n {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--surface); border: 1px solid var(--border);
+      display: grid; place-items: center;
+      font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-4);
+    }
+    .step strong { display: block; font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+    .step code {
+      display: block; padding: 14px 16px; border-radius: var(--radius-sm);
+      background: var(--surface); border: 1px solid var(--border-subtle);
+      font-size: 13px; color: var(--text-3); line-height: 1.7; overflow-x: auto;
+    }
+    .qs-note {
+      margin-top: 36px; padding: 20px 24px; border-radius: var(--radius-sm);
+      background: var(--surface); border: 1px solid var(--border-subtle);
+      font-size: 14px; color: var(--text-3); line-height: 1.75;
+    }
+    .qs-note strong { color: var(--text-2); }
+    .qs-note a { color: var(--text-2); text-decoration: underline; text-underline-offset: 3px; }
+
+    /* ─── Footer ─── */
+    footer {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 40px 0; border-top: 1px solid var(--border-subtle);
+      color: var(--text-4); font-size: 13px;
+    }
+    footer a { color: var(--text-3); transition: color 0.15s; }
+    footer a:hover { color: var(--text); }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 900px) {
+      .pillar-grid, .sec-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .hero { padding: 80px 0 64px; }
+      .hero h1 { font-size: 36px; }
+      .concept-equation { font-size: 28px; }
+      section { padding: 64px 0; }
+      .section-title { font-size: 28px; }
+      .arch-cards { grid-template-columns: 1fr; }
+      .qs-layout { grid-template-columns: 1fr; gap: 32px; }
+      table { min-width: 600px; }
+      .hero-cta { flex-direction: column; align-items: center; }
+      .nav-links a:not(.nav-gh) { display: none; }
+      footer { flex-direction: column; gap: 8px; }
+    }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <nav aria-label="Primary navigation">
-      <a class="brand" href="#top"><span class="brand-mark">CJ</span> Claude Jail</a>
-      <div class="nav-links">
-        <a href="#architecture">Architecture</a><a href="#security">Security</a><a href="#start">Quick start</a>
-        <a class="github" href="https://github.com/shkrwnd/claude-jail">GitHub ↗</a>
-      </div>
-    </nav>
 
-    <main id="top">
-      <header class="hero">
-        <div>
-          <div class="eyebrow">Agent containment system · Apache 2.0</div>
-          <h1>Let Claude <em>loose.</em></h1>
-          <p class="hero-copy">A hardened Docker sandbox with zero credentials inside. Every powerful CLI action is intercepted, authorized, executed, and logged by a trusted host-side broker.</p>
-          <div class="hero-actions">
-            <a class="button primary" href="#start">Deploy the jail <span>↓</span></a>
-            <a class="button" href="https://github.com/shkrwnd/claude-jail">Inspect source <span>↗</span></a>
-          </div>
-        </div>
-        <div class="terminal" aria-label="Example Claude Jail command authorization log">
-          <div class="stamp">Host<br>credentials<br>never enter</div>
-          <div class="terminal-head"><span>agent-exec / audit stream</span><span>connected ●</span></div>
-          <div class="terminal-body">
-            <div class="terminal-line"><span class="dim">$</span> claude --dangerously-skip-permissions</div>
-            <div class="terminal-line"><span class="prompt">claude ›</span> I'll inspect the deployment.</div>
-            <div class="terminal-line"><span class="dim">→ broker</span> kubectl get pods -n prod</div>
-            <div class="terminal-line"><span class="ok">✓ APPROVED</span> static_policy · 38ms</div>
-            <div class="terminal-line"><span class="dim">→ broker</span> terraform destroy -auto-approve</div>
-            <div class="terminal-line"><span class="deny">✕ DENIED</span> destructive operation blocked</div>
-            <div class="terminal-line"><span class="dim">→ audit</span> decision recorded · credentials revoked</div>
-            <div class="terminal-line"><br><span class="prompt">jail ›</span> blast radius contained_</div>
-          </div>
-        </div>
-      </header>
-    </main>
+<nav>
+  <div class="nav-inner">
+    <a class="brand" href="#top">Claude Jail</a>
+    <div class="nav-links">
+      <a href="#architecture">Architecture</a>
+      <a href="#security">Security</a>
+      <a href="#compare">Compare</a>
+      <a href="#start">Get Started</a>
+      <a class="nav-gh" href="https://github.com/shkrwnd/claude-jail">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ═══ Hero ═══ -->
+  <header class="hero" id="top">
+    <div class="hero-badge"><span class="dot"></span> Open source &middot; Apache 2.0</div>
+    <h1>Secure sandbox for AI coding agents</h1>
+    <p class="subtitle">Docker keeps an agent <em>in</em>&thinsp;&mdash;&thinsp;it doesn't stop it from running <code>terraform&nbsp;destroy</code> with your credentials. Claude Jail adds the missing half.</p>
+    <div class="hero-cta">
+      <a class="btn btn-w" href="#start">Get Started</a>
+      <a class="btn btn-ghost" href="https://github.com/shkrwnd/claude-jail">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+    <div class="install-tabs">
+      <div class="install-tab-bar">
+        <button class="active" onclick="switchTab(this,'qs')">Quick start</button>
+        <button onclick="switchTab(this,'src')">Clone from source</button>
+      </div>
+      <div class="install-code" id="tab-qs">
+        <code>git clone https://github.com/shkrwnd/claude-jail && cd claude-jail && ./start.sh</code>
+        <button class="copy-btn" onclick="copyCmd(this)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
+      </div>
+      <div class="install-code" id="tab-src" style="display:none">
+        <code>git clone https://github.com/shkrwnd/claude-jail && cd claude-jail && ./start.sh</code>
+        <button class="copy-btn" onclick="copyCmd(this)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <hr class="section-divider">
+
+  <!-- ═══ Concept ═══ -->
+  <div class="concept">
+    <div class="concept-equation">
+      Agent<span class="op">=</span>Sandbox<span class="op">+</span>Authorization
+    </div>
+    <div class="concept-body">
+      The sandbox keeps an agent contained. But containment alone is not enough&thinsp;&mdash;&thinsp;an agent with your AWS credentials can still delete a production database from inside a container. Authorization ensures every action is checked against policy before it runs, on the host, where the agent can't tamper with it.
+    </div>
   </div>
 
-  <div class="ticker" aria-hidden="true"><div class="ticker-track">
-    <span>Zero guest credentials</span><span>Fail-closed policy</span><span>Restricted egress</span><span>Complete audit trail</span><span>Non-root container</span>
-    <span>Zero guest credentials</span><span>Fail-closed policy</span><span>Restricted egress</span><span>Complete audit trail</span><span>Non-root container</span>
-  </div></div>
+  <hr class="section-divider">
 
-  <div class="shell">
-    <section class="architecture" id="architecture">
-      <div class="section-head"><div class="number">01 / TRUST BOUNDARY</div><div><h2>The agent gets tools.<br>Not your identity.</h2><p class="subhead">Docker contains files and processes. Claude Jail adds the missing control plane for credentials and real-world side effects.</p></div></div>
-      <div class="flow">
-        <article class="flow-card dark"><div class="label">Untrusted zone</div><h3>Claude container</h3><p>Claude works freely against only the folders you explicitly mount.</p><ul><li>no cloud credentials</li><li>non-root UID 1000</li><li>capabilities dropped</li></ul></article>
-        <div class="flow-arrow">→</div>
-        <article class="flow-card accent"><div class="label">Control plane</div><h3>Command broker</h3><p>CLI wrappers route sensitive actions through host-owned policy.</p><ul><li>authenticate request</li><li>authorize command</li><li>issue temporary access</li></ul></article>
-        <div class="flow-arrow">→</div>
-        <article class="flow-card"><div class="label">Trusted zone</div><h3>Host execution</h3><p>Approved actions run where credentials live, then return sanitized output.</p><ul><li>credentials stay home</li><li>stdout / stderr returned</li><li>every action logged</li></ul></article>
+  <!-- ═══ Pillars ═══ -->
+  <div class="pillars">
+    <div class="wrap">
+      <div class="pillar-grid">
+        <div class="pillar">
+          <div class="pillar-icon">&#9881;</div>
+          <h3>CLI interception</h3>
+          <p>Shell wrappers replace <code>aws</code>, <code>git</code>, <code>kubectl</code>, <code>terraform</code>, and more inside the container. Claude Code sees real CLIs&thinsp;&mdash;&thinsp;they're shims that serialize every call as JSON and send it to the host.</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon">&#128274;</div>
+          <h3>Host-side execution</h3>
+          <p>The execution server runs on the host with real credentials. A pluggable auth backend decides approve/deny per command. The container never sees tokens, keys, or the policy itself.</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon">&#127760;</div>
+          <h3>Network control</h3>
+          <p>The container sits on an <code>internal:&nbsp;true</code> Docker network with no internet. A tinyproxy sidecar allowlists domains. DNS goes through dnsmasq. Exfiltration is blocked at the network layer.</p>
+        </div>
       </div>
-    </section>
+    </div>
   </div>
 
-  <section class="features" id="security">
-    <div class="shell">
-      <div class="section-head"><div class="number">02 / DEFENSES</div><div><h2>Assume the agent<br>will test the walls.</h2><p class="subhead">The policy and secrets live outside the container, so deleting wrappers or calling the broker directly gains nothing.</p></div></div>
-      <div class="feature-grid">
-        <article class="feature"><div class="icon">00</div><h3>Credential isolation</h3><p>Never mount ~/.aws, ~/.ssh, ~/.kube, Docker config, or GitHub credentials. Temporary credentials can be scoped per approved action.</p></article>
-        <article class="feature"><div class="icon">01</div><h3>Pluggable authorization</h3><p>Use a fail-closed static policy, webhook approvals, OPA, Slack, or your own Python backend without rebuilding the container.</p></article>
-        <article class="feature"><div class="icon">10</div><h3>Egress allowlisting</h3><p>An internal-only network and filtered HTTPS sidecar prevent arbitrary outbound traffic and credential exfiltration.</p></article>
-        <article class="feature"><div class="icon">11</div><h3>Auditable execution</h3><p>Capture the tool, full command, reason, repository, branch, decision, output, exit status, and duration on the trusted host.</p></article>
+  <hr class="section-divider">
+
+  <!-- ═══ Architecture ═══ -->
+  <section id="architecture">
+    <div class="section-head">
+      <div class="section-label">Architecture</div>
+      <div class="section-title">How it works</div>
+      <p class="section-desc">Every CLI call from the agent follows the same path: wrapper &rarr; agent-exec &rarr; sidecar relay &rarr; host execution server &rarr; auth backend &rarr; real binary (or denial).</p>
+    </div>
+
+    <div class="arch-diagram">
+<pre>
+CONTAINER (jail network, no internet)              HOST (trusted, has credentials)
+&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;     &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
+&#9474;                                        &#9474;     &#9474;                                  &#9474;
+&#9474;  Claude Code                            &#9474;     &#9474;  Execution Server               &#9474;
+&#9474;    &#9474;                                    &#9474;     &#9474;    (server/main.py)              &#9474;
+&#9474;    &#9660;                                    &#9474;     &#9474;                                  &#9474;
+&#9474;  CLI wrapper  (wrappers/aws)             &#9474;     &#9474;  1. Verify X-Exec-Token         &#9474;
+&#9474;    &#9474;                                    &#9474;     &#9474;  2. Auth backend (pluggable)    &#9474;
+&#9474;    &#9660;                          TCP :8377 &#9474;     &#9474;  3. Run real binary with creds  &#9474;
+&#9474;  agent-exec  &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472; sidecar &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9532;&#9472;&#9472;&#9472;&#9472;&#9472;&#9654;  4. Return stdout/stderr/exit   &#9474;
+&#9474;             JSON over HTTP               &#9474;     &#9474;  5. Log decision + output       &#9474;
+&#9474;                                        &#9474;     &#9474;                                  &#9474;
+&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;     &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;
+
+Sidecar (11 MB Alpine):
+  tinyproxy :8888  &#9472; egress proxy, allowlists domains
+  dnsmasq   :53    &#9472; DNS forwarder (internal network blocks external DNS)
+  socat     :8377  &#9472; TCP relay to host execution server
+</pre>
+    </div>
+
+    <div class="arch-cards">
+      <div class="arch-card">
+        <h3>What happens when Claude runs <code>aws s3 ls</code></h3>
+        <ol>
+          <li>Claude Code calls <code>/opt/agent/bin/aws</code>&thinsp;&mdash;&thinsp;a shell wrapper, not the real AWS CLI</li>
+          <li>The wrapper invokes <code>agent-exec</code>, which POSTs <code>{"tool":"aws","args":["s3","ls"]}</code> to the sidecar</li>
+          <li>Sidecar relays the request to the host execution server via socat</li>
+          <li>Host verifies the shared token, calls the configured auth backend</li>
+          <li>If approved: runs the real <code>aws</code> with host credentials, returns stdout/stderr</li>
+          <li>If denied: returns an error. The real CLI never executes.</li>
+        </ol>
+      </div>
+      <div class="arch-card">
+        <h3>Network layout</h3>
+        <ol>
+          <li>Container on a Docker <code>internal: true</code> network&thinsp;&mdash;&thinsp;no route to the internet</li>
+          <li>All HTTPS through the sidecar's tinyproxy, which checks domains against an allowlist</li>
+          <li>DNS forwarded by dnsmasq (internal networks block external DNS)</li>
+          <li>Node.js doesn't natively use <code>HTTPS_PROXY</code>&thinsp;&mdash;&thinsp;a bootstrap script patches the global HTTP agents at startup</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span></div>
+      <div class="terminal-body">
+<span class="t-w">claude &gt;</span> I'll check the deployment and clean up old infra.
+
+<span class="t-d">&rarr; broker</span>  <code>kubectl get pods -n prod</code>
+<span class="t-g">APPROVED</span>  <span class="t-d">static_policy &middot; 12ms</span>
+
+<span class="t-d">&rarr; broker</span>  <code>terraform destroy -auto-approve</code>
+<span class="t-r">DENIED</span>   <span class="t-d">destructive operation blocked by policy</span>
+
+<span class="t-d">&rarr; broker</span>  <code>git push --force origin main</code>
+<span class="t-r">DENIED</span>   <span class="t-d">force push is on the deny list</span>
       </div>
     </div>
   </section>
 
-  <div class="shell">
-    <section class="comparison">
-      <div class="section-head"><div class="number">03 / WHY</div><div><h2>Containment is only<br>half the system.</h2></div></div>
+  <hr class="section-divider">
+
+  <!-- ═══ Security ═══ -->
+  <section id="security">
+    <div class="section-head section-head-c">
+      <div class="section-label">Security</div>
+      <div class="section-title">Defense in depth</div>
+      <p class="section-desc">Every layer is designed so that bypassing the sandbox gains nothing. The execution server authorizes on the host using policy the container cannot see or influence.</p>
+    </div>
+    <div class="sec-grid">
+      <article class="sec-card">
+        <h3>Credential isolation</h3>
+        <p>No ~/.aws, ~/.ssh, ~/.kube, or Docker config inside the container. Credentials are injected per-command by the host-side auth backend.</p>
+      </article>
+      <article class="sec-card">
+        <h3>Pluggable authorization</h3>
+        <p>Static allow/deny lists, webhooks, OPA, or your own Python class. Switch backends in server.env without rebuilding.</p>
+      </article>
+      <article class="sec-card">
+        <h3>Egress filtering</h3>
+        <p>Internal Docker network with a tinyproxy sidecar. Only allowlisted domains are reachable. Token exfiltration blocked at network layer.</p>
+      </article>
+      <article class="sec-card">
+        <h3>Audit trail</h3>
+        <p>Every command logged with tool, args, auth decision, exit code, and duration. Logged on the host, not inside the container.</p>
+      </article>
+      <article class="sec-card">
+        <h3>Container hardening</h3>
+        <p>cap_drop: ALL, no-new-privileges, seccomp profile, memory and pid limits, non-root user (UID 1000).</p>
+      </article>
+      <article class="sec-card">
+        <h3>Loopback only</h3>
+        <p>Execution server binds 127.0.0.1. Container reaches it via socat relay in the sidecar. Never exposed to the network.</p>
+      </article>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ Compare ═══ -->
+  <section id="compare">
+    <div class="section-head section-head-c">
+      <div class="section-label">Comparison</div>
+      <div class="section-title">Containment is only half the system</div>
+    </div>
+    <div class="cmp-wrap">
       <table>
-        <thead><tr><th>Control</th><th>Plain Docker</th><th>Claude Jail</th></tr></thead>
+        <thead><tr><th>Control</th><th>Plain Docker</th><th>Other Solutions</th><th>Claude Jail</th></tr></thead>
         <tbody>
-          <tr><td>Filesystem / process isolation</td><td class="yes">Included</td><td class="yes">Hardened</td></tr>
-          <tr><td>Credentials kept outside guest</td><td class="no">Usually mounted</td><td class="yes">Always</td></tr>
-          <tr><td>Per-command authorization</td><td class="no">None</td><td class="yes">Pluggable</td></tr>
-          <tr><td>Temporary scoped credentials</td><td class="no">None</td><td class="yes">Supported</td></tr>
-          <tr><td>Domain-filtered egress</td><td class="no">Manual</td><td class="yes">Built in</td></tr>
-          <tr><td>Central audit trail</td><td class="no">Container logs</td><td class="yes">Decision-level</td></tr>
+          <tr><td>Process / filesystem isolation</td><td class="y">Included</td><td class="y">Included</td><td class="y">Hardened</td></tr>
+          <tr><td>Credentials outside guest</td><td class="n">Usually mounted</td><td class="n">Env vars passed</td><td class="y">Always isolated</td></tr>
+          <tr><td>Per-command authorization</td><td class="n">None</td><td class="n">Prompt only</td><td class="y">Pluggable backends</td></tr>
+          <tr><td>Domain-filtered egress</td><td class="n">Manual iptables</td><td class="n">All-or-nothing</td><td class="y">Allowlist proxy</td></tr>
+          <tr><td>Central audit trail</td><td class="n">Container logs</td><td class="n">None</td><td class="y">Decision-level</td></tr>
+          <tr><td>Container hardening</td><td class="n">User config</td><td class="n">Minimal</td><td class="y">seccomp + caps + non-root</td></tr>
         </tbody>
       </table>
-    </section>
+    </div>
+  </section>
 
-    <section class="quickstart" id="start">
-      <div><div class="eyebrow">Five-minute setup</div><h2>Build the cage.<br>Open the door.</h2><p class="subhead">Docker and Git are the only host requirements. Claude Code is installed inside the image.</p></div>
-      <div class="steps">
-        <div class="step"><div><strong>Clone the repository</strong><code>git clone https://github.com/shkrwnd/claude-jail.git<br>cd claude-jail</code></div></div>
-        <div class="step"><div><strong>Mount only the workspaces Claude needs</strong><code># deploy/docker-compose.override.yml<br>/path/to/project:/workspace/project:rw</code></div></div>
-        <div class="step"><div><strong>Choose an authorization policy</strong><code>AUTH_BACKEND=server.auth_backends.static_policy.StaticPolicyBackend</code></div></div>
-        <div class="step"><div><strong>Start the jail</strong><code>./start.sh<br># then, inside the container:<br>claude</code></div></div>
+  <hr class="section-divider">
+
+  <!-- ═══ Quick Start ═══ -->
+  <section id="start">
+    <div class="qs-layout">
+      <div>
+        <div class="section-label">Get Started</div>
+        <div class="section-title">Up and running in five minutes</div>
+        <p class="section-desc">Docker and Git are the only requirements. Claude Code is installed inside the image.</p>
+        <div class="qs-note">
+          <strong>Supported tools:</strong> aws, az, gh, git, kubectl, psql, terraform&thinsp;&mdash;&thinsp;adding more is a three-line wrapper. <a href="https://github.com/shkrwnd/claude-jail/issues">Open an issue</a> to request one.
+        </div>
       </div>
-    </section>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div><strong>Clone</strong><code>git clone https://github.com/shkrwnd/claude-jail.git<br>cd claude-jail</code></div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div><strong>Mount your workspaces</strong><code># deploy/docker-compose.override.yml<br>services:<br>  claude:<br>    volumes:<br>      - /path/to/project:/workspace/project:rw</code></div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div><strong>Set an auth policy</strong><code># deploy/server.env<br>AUTH_BACKEND=server.auth_backends.static_policy.StaticPolicyBackend</code></div>
+        </div>
+        <div class="step">
+          <div class="step-n">4</div>
+          <div><strong>Start</strong><code>./start.sh</code></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <aside class="final-cta"><div><div class="eyebrow">Open source · inspect every boundary</div><h2>Give the agent autonomy.<br>Keep the authority.</h2></div><a class="button" href="https://github.com/shkrwnd/claude-jail">View on GitHub ↗</a></aside>
-    <footer><span>Claude Jail / Apache-2.0</span><span>Built by <a href="https://github.com/shkrwnd">Shikhar Tiwari</a></span><span>Security model in repository</span></footer>
-  </div>
+  <footer>
+    <span>Open source &middot; Apache 2.0 &middot; &copy; 2025</span>
+    <span>Built by <a href="https://github.com/shkrwnd">Shikhar Tiwari</a></span>
+  </footer>
+
+</div>
+
+<script>
+function switchTab(btn, id) {
+  document.querySelectorAll('.install-tab-bar button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-qs').style.display = id === 'qs' ? 'flex' : 'none';
+  document.getElementById('tab-src').style.display = id === 'src' ? 'flex' : 'none';
+}
+function copyCmd(btn) {
+  const code = btn.previousElementSibling.textContent;
+  navigator.clipboard.writeText(code);
+  btn.innerHTML = '<span style="font-size:12px;color:var(--green)">Copied</span>';
+  setTimeout(() => {
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+  }, 2000);
+}
+</script>
 </body>
 </html>

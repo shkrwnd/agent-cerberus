@@ -1,15 +1,15 @@
 """Static allow/deny-list backend — the worked example from the README.
 
-Demonstrates the minimal custom backend: prefix-match the command string
-against a deny list first, then an allow list, and fail closed on anything
-unlisted. Select it in deploy/server.env:
+A demonstration backend that prefix-matches commands against allow/deny
+lists. Customize ALLOWED and DENIED for your use case, or write your own
+backend by extending AuthBackend.
 
     AUTH_BACKEND=server.auth_backends.static_policy.StaticPolicyBackend
 
-Prefix matching is a demonstration, not a security boundary — e.g.
-"git -c core.sshCommand=... push" doesn't start with "git push", and
-"kubectl get" also matches "kubectl get secrets". Robust policies must
-inspect `args`, not just the command string.
+Note: Claude Code runs git commands with flags like --no-optional-locks
+and -c before the subcommand (e.g. "git --no-optional-locks status").
+Simple prefix matching won't catch these — a production backend should
+parse args properly or match on the tool + subcommand instead.
 """
 
 from __future__ import annotations
