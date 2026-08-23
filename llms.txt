@@ -1,4 +1,4 @@
-# Agent Lockbox
+# Agent Cerberus
 
 > A sandbox for running Claude Code and other AI coding agents safely in
 > Docker: every CLI command the agent runs (aws, gh, git, kubectl, terraform,
@@ -32,7 +32,7 @@ the real binary, and returns only stdout/stderr/exit code to the container.
 
 ## Repository
 
-- GitHub: https://github.com/shkrwnd/agent-lockbox
+- GitHub: https://github.com/shkrwnd/agent-cerberus
 - License: Apache-2.0
 - Stdlib-only Python; run tests with
   `PYTHONPATH=. python3 -m unittest discover tests`

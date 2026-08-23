@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://shkrwnd.github.io/agent-lockbox/sitemap.xml
+Sitemap: https://shkrwnd.github.io/agent-cerberus/sitemap.xml

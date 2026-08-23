@@ -20,11 +20,11 @@ And these are the agents where you at least have visibility. You can see every c
 
 Right now, the only options are: give it everything and hope, or give it nothing and do the work yourself.
 
-So I built Agent Lockbox — the agent runs in a sandbox with zero credentials, and every command it wants to execute goes through an external authorization layer. The agent asks. Something else decides. Based on rules you define.
+So I built Agent Cerberus — the agent runs in a sandbox with zero credentials, and every command it wants to execute goes through an external authorization layer. The agent asks. Something else decides. Based on rules you define.
 
 Solutions like this already exist — but I wanted to build one from scratch to understand what it actually takes to sandbox an AI agent. Consider this an experiment. I learned more from the things that broke than from the things that worked.
 
-GitHub: https://github.com/shkrwnd/agent-lockbox
+GitHub: https://github.com/shkrwnd/agent-cerberus
 
 Part 2 — the design choices, what broke, and what I learned building it.
 

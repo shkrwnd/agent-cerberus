@@ -1,6 +1,6 @@
 # Architecture
 
-Internals of Agent Lockbox: how a tool call travels from the container to the
+Internals of Agent Cerberus: how a tool call travels from the container to the
 host, and where the trust boundaries sit. Read the README first for the
 user-facing overview; this document is for people extending or auditing the
 system.

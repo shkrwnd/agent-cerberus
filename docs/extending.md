@@ -1,4 +1,4 @@
-# Extending Agent Lockbox
+# Extending Agent Cerberus
 
 How to add your own authorization policy, intercept more CLIs, and inject
 temporary credentials. See [architecture.md](architecture.md) for the
