@@ -436,27 +436,8 @@
       <p class="section-desc">Every CLI call from the agent follows the same path: wrapper &rarr; agent-exec &rarr; sidecar relay &rarr; host execution server &rarr; auth backend &rarr; real binary (or denial).</p>
     </div>
 
-    <div class="arch-diagram">
-<pre>
-CONTAINER (jail network, no internet)              HOST (trusted, has credentials)
-&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;     &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
-&#9474;                                        &#9474;     &#9474;                                  &#9474;
-&#9474;  Claude Code                            &#9474;     &#9474;  Execution Server               &#9474;
-&#9474;    &#9474;                                    &#9474;     &#9474;    (server/main.py)              &#9474;
-&#9474;    &#9660;                                    &#9474;     &#9474;                                  &#9474;
-&#9474;  CLI wrapper  (wrappers/aws)             &#9474;     &#9474;  1. Verify X-Exec-Token         &#9474;
-&#9474;    &#9474;                                    &#9474;     &#9474;  2. Auth backend (pluggable)    &#9474;
-&#9474;    &#9660;                          TCP :8377 &#9474;     &#9474;  3. Run real binary with creds  &#9474;
-&#9474;  agent-exec  &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472; sidecar &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9532;&#9472;&#9472;&#9472;&#9472;&#9472;&#9654;  4. Return stdout/stderr/exit   &#9474;
-&#9474;             JSON over HTTP               &#9474;     &#9474;  5. Log decision + output       &#9474;
-&#9474;                                        &#9474;     &#9474;                                  &#9474;
-&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;     &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;
-
-Sidecar (11 MB Alpine):
-  tinyproxy :8888  &#9472; egress proxy, allowlists domains
-  dnsmasq   :53    &#9472; DNS forwarder (internal network blocks external DNS)
-  socat     :8377  &#9472; TCP relay to host execution server
-</pre>
+    <div style="border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border-subtle);">
+      <img src="architecture-diagram.png" alt="Agent Cerberus architecture — agent container, sidecar, and host execution server" style="width: 100%; display: block;">
     </div>
 
     <div class="arch-cards">

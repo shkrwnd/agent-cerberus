@@ -1,0 +1,298 @@
+<mxfile host="app.diagrams.net" agent="Claude" version="24.0.0">
+  <diagram name="Agent Cerberus Architecture" id="arch">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1100" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <!-- LEFT SIDE: CONTAINER ZONE                                -->
+        <!-- ══════════════════════════════════════════════════════════ -->
+
+        <!-- Jail Network background -->
+        <mxCell id="jail_net" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FF9800;strokeWidth=1.5;arcSize=4;dashed=1;dashPattern=8 4;opacity=40;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="660" height="1020" as="geometry" />
+        </mxCell>
+        <mxCell id="jail_label" value="&lt;font style=&quot;font-size:13px;&quot; color=&quot;#E65100&quot;&gt;&lt;b&gt;JAIL NETWORK&lt;/b&gt; · internal: true · 172.28.0.0/24 · No internet route&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="50" width="480" height="25" as="geometry" />
+        </mxCell>
+
+        <!-- ── Agent Container ── -->
+        <mxCell id="agent_box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#1565C0;strokeWidth=1.5;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="80" y="100" width="580" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="agent_title" value="&lt;font style=&quot;font-size:14px;&quot; color=&quot;#0D47A1&quot;&gt;&lt;b&gt;AGENT CONTAINER&lt;/b&gt;&lt;/font&gt;  &lt;font style=&quot;font-size:11px;&quot; color=&quot;#E53935&quot;&gt;UNTRUSTED&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="110" width="280" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="agent_specs" value="&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;node:20-slim · UID 1000 · cap_drop: ALL · no-new-privileges · seccomp · 4GB / 256 PIDs&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="132" width="520" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Claude Code -->
+        <mxCell id="claude_code" value="&lt;font style=&quot;font-size:13px;&quot;&gt;&lt;b&gt;Claude Code&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;AI coding agent&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1565C0;strokeWidth=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="260" y="175" width="220" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- CLI Wrappers row -->
+        <mxCell id="wrappers_label" value="&lt;font style=&quot;font-size:11px;&quot; color=&quot;#0D47A1&quot;&gt;&lt;b&gt;CLI Wrappers&lt;/b&gt;&lt;/font&gt;  &lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;/opt/agent/bin/ · read-only · root-owned&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="265" width="340" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="w_aws" value="&lt;b&gt;aws&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#90CAF9;fontSize=11;fontColor=#1565C0;" vertex="1" parent="1">
+          <mxGeometry x="120" y="290" width="65" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="w_git" value="&lt;b&gt;git&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#90CAF9;fontSize=11;fontColor=#1565C0;" vertex="1" parent="1">
+          <mxGeometry x="195" y="290" width="65" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="w_kubectl" value="&lt;b&gt;kubectl&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#90CAF9;fontSize=11;fontColor=#1565C0;" vertex="1" parent="1">
+          <mxGeometry x="270" y="290" width="65" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="w_terraform" value="&lt;b&gt;terraform&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#90CAF9;fontSize=11;fontColor=#1565C0;" vertex="1" parent="1">
+          <mxGeometry x="345" y="290" width="75" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="w_gh" value="&lt;b&gt;gh&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#90CAF9;fontSize=11;fontColor=#1565C0;" vertex="1" parent="1">
+          <mxGeometry x="430" y="290" width="55" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="w_psql" value="&lt;b&gt;psql&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#90CAF9;fontSize=11;fontColor=#1565C0;" vertex="1" parent="1">
+          <mxGeometry x="495" y="290" width="55" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="w_az" value="&lt;b&gt;az&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#90CAF9;fontSize=11;fontColor=#1565C0;" vertex="1" parent="1">
+          <mxGeometry x="560" y="290" width="55" height="32" as="geometry" />
+        </mxCell>
+
+        <!-- agent-exec -->
+        <mxCell id="agent_exec" value="&lt;font style=&quot;font-size:12px;&quot;&gt;&lt;b&gt;agent-exec&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;Collects cwd, branch, AGENT_REASON&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1565C0;strokeWidth=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="230" y="365" width="280" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- exec_client.py -->
+        <mxCell id="exec_client" value="&lt;font style=&quot;font-size:12px;&quot;&gt;&lt;b&gt;exec_client.py&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;POST /execute · X-Exec-Token · JSON body&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1565C0;strokeWidth=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="230" y="450" width="280" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Not present callout -->
+        <mxCell id="not_present" value="&lt;font style=&quot;font-size:10px;&quot; color=&quot;#C62828&quot;&gt;Not present in container:&lt;br&gt;~/.aws · ~/.ssh · ~/.kube&lt;br&gt;~/.docker · ~/.config/gh&lt;br&gt;auth backend code · policy config&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#EF9A9A;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="365" width="110" height="75" as="geometry" />
+        </mxCell>
+
+        <!-- Workspace -->
+        <mxCell id="workspace" value="&lt;font style=&quot;font-size:11px;&quot;&gt;&lt;b&gt;/workspace&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;Mounted folders&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=6;fillColor=#FFFFFF;strokeColor=#1565C0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="100" y="180" width="110" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Env vars -->
+        <mxCell id="env_vars" value="&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;HTTPS_PROXY → sidecar:8888&lt;br&gt;NODE_OPTIONS → proxy-bootstrap.js&lt;br&gt;NO_PROXY → sidecar&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B0BEC5;strokeWidth=1;strokeDashPattern=4 2;" vertex="1" parent="1">
+          <mxGeometry x="100" y="460" width="110" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Arrows inside agent -->
+        <mxCell id="a1" style="rounded=1;strokeColor=#90CAF9;strokeWidth=1;" edge="1" source="claude_code" target="agent_exec" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="370" y="245" />
+              <mxPoint x="370" y="265" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a2" style="rounded=1;strokeColor=#90CAF9;strokeWidth=1;" edge="1" source="agent_exec" target="exec_client" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <!-- SIDECAR CONTAINER                                        -->
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <mxCell id="sidecar_box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=1.5;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="80" y="670" width="580" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="sidecar_title" value="&lt;font style=&quot;font-size:14px;&quot; color=&quot;#1B5E20&quot;&gt;&lt;b&gt;SIDECAR&lt;/b&gt;&lt;/font&gt;  &lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;alpine:3.20 · 11 MB · Dual-network: jail + egress&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="680" width="400" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tinyproxy" value="&lt;font style=&quot;font-size:12px;&quot;&gt;&lt;b&gt;tinyproxy&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;:8888 · HTTPS proxy&lt;br&gt;FilterDefaultDeny: Yes&lt;br&gt;Domain regex allowlist&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E7D32;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="100" y="715" width="160" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="dnsmasq" value="&lt;font style=&quot;font-size:12px;&quot;&gt;&lt;b&gt;dnsmasq&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;:53 · DNS forwarder&lt;br&gt;→ 8.8.8.8 / 8.8.4.4&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E7D32;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="290" y="715" width="160" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="socat" value="&lt;font style=&quot;font-size:12px;&quot;&gt;&lt;b&gt;socat&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;:8377 · TCP relay&lt;br&gt;→ host.docker.internal&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E7D32;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="480" y="715" width="160" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: exec_client → socat -->
+        <mxCell id="a3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#FF9800;strokeWidth=2;" edge="1" source="exec_client" target="socat" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="560" y="530" />
+              <mxPoint x="560" y="640" />
+              <mxPoint x="560" y="640" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a3_label" value="&lt;font color=&quot;#E65100&quot; style=&quot;font-size:10px;&quot;&gt;JSON + token&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="a3">
+          <mxGeometry x="-0.2" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <!-- EGRESS + INTERNET                                        -->
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <mxCell id="egress_label" value="&lt;font style=&quot;font-size:11px;&quot; color=&quot;#2E7D32&quot;&gt;&lt;b&gt;EGRESS NETWORK&lt;/b&gt; · has internet&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="880" width="240" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="internet" value="&lt;font style=&quot;font-size:12px;&quot;&gt;&lt;b&gt;Internet&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;*.anthropic.com · *.claude.com&lt;br&gt;pypi.org · npmjs.org&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E7D32;strokeWidth=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="120" y="920" width="220" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="a4" style="rounded=1;strokeColor=#2E7D32;strokeWidth=1.5;" edge="1" source="tinyproxy" target="internet" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a4_label" value="&lt;font color=&quot;#2E7D32&quot; style=&quot;font-size:10px;&quot;&gt;Allowlisted HTTPS only&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="a4">
+          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <!-- RIGHT SIDE: HOST (TRUSTED)                               -->
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <mxCell id="host_box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#7B1FA2;strokeWidth=1.5;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="820" y="40" width="540" height="1020" as="geometry" />
+        </mxCell>
+        <mxCell id="host_title" value="&lt;font style=&quot;font-size:14px;&quot; color=&quot;#4A148C&quot;&gt;&lt;b&gt;HOST MACHINE&lt;/b&gt;&lt;/font&gt;  &lt;font style=&quot;font-size:11px;&quot; color=&quot;#2E7D32&quot;&gt;TRUSTED&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
+          <mxGeometry x="845" y="50" width="240" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="host_desc" value="&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;Has real credentials · Runs real CLI binaries · Controls all policy&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
+          <mxGeometry x="845" y="72" width="410" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Execution Server -->
+        <mxCell id="exec_server" value="&lt;font style=&quot;font-size:14px;&quot; color=&quot;#4A148C&quot;&gt;&lt;b&gt;Execution Server&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;server/main.py · 127.0.0.1:8377 · Loopback only&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7B1FA2;strokeWidth=2;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="860" y="110" width="460" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Step 1 -->
+        <mxCell id="step1" value="&lt;font style=&quot;font-size:12px;&quot;&gt;&lt;b&gt;1. Verify Token&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;hmac.compare_digest · 256-bit · timing-safe&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CE93D8;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="860" y="210" width="460" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Step 2 -->
+        <mxCell id="step2" value="&lt;font style=&quot;font-size:12px;&quot;&gt;&lt;b&gt;2. Map Path&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;/workspace/project → /Users/you/code/project&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CE93D8;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="860" y="300" width="460" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Step 3 -->
+        <mxCell id="step3" value="&lt;font style=&quot;font-size:12px;&quot;&gt;&lt;b&gt;3. Authorize&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;Pluggable backend · configured in server.env (host-only)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CE93D8;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="860" y="390" width="460" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Auth backends -->
+        <mxCell id="ab_allow" value="&lt;b&gt;allow_all&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot; color=&quot;#546E7A&quot;&gt;Dev only&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#A5D6A7;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="870" y="470" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ab_static" value="&lt;b&gt;static_policy&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot; color=&quot;#546E7A&quot;&gt;Allow/deny lists&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FFE0B2;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="985" y="470" width="105" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ab_webhook" value="&lt;b&gt;webhook&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot; color=&quot;#546E7A&quot;&gt;HTTP / Slack / OPA&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#90CAF9;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1105" y="470" width="105" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ab_custom" value="&lt;b&gt;Custom class&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot; color=&quot;#546E7A&quot;&gt;Any Python class&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#CE93D8;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1225" y="470" width="100" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Step 4 -->
+        <mxCell id="step4" value="&lt;font style=&quot;font-size:12px;&quot;&gt;&lt;b&gt;4. Inject Credentials&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;Short-lived · action-scoped · env vars only · never on disk&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CE93D8;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="860" y="550" width="460" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Credential types -->
+        <mxCell id="c_aws" value="&lt;font style=&quot;font-size:9px;&quot;&gt;&lt;b&gt;AWS&lt;/b&gt; STS&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FFE0B2;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="870" y="625" width="70" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="c_gh" value="&lt;font style=&quot;font-size:9px;&quot;&gt;&lt;b&gt;GitHub&lt;/b&gt; token&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FFE0B2;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="950" y="625" width="80" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="c_k8s" value="&lt;font style=&quot;font-size:9px;&quot;&gt;&lt;b&gt;K8s&lt;/b&gt; --token&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FFE0B2;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="625" width="75" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="c_tf" value="&lt;font style=&quot;font-size:9px;&quot;&gt;&lt;b&gt;Terraform&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FFE0B2;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="1125" y="625" width="70" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="c_pg" value="&lt;font style=&quot;font-size:9px;&quot;&gt;&lt;b&gt;PostgreSQL&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FFE0B2;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="1205" y="625" width="70" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="c_az" value="&lt;font style=&quot;font-size:9px;&quot;&gt;&lt;b&gt;Azure&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FFE0B2;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="1285" y="625" width="55" height="28" as="geometry" />
+        </mxCell>
+
+        <!-- Step 5 -->
+        <mxCell id="step5" value="&lt;font style=&quot;font-size:12px;&quot;&gt;&lt;b&gt;5. Execute&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;subprocess.run · shell=False · timeout=300s&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CE93D8;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="860" y="690" width="220" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Step 6 -->
+        <mxCell id="step6" value="&lt;font style=&quot;font-size:12px;&quot;&gt;&lt;b&gt;6. Audit Log&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;tool · command · decision · exit_code&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CE93D8;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="690" width="220" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Host config -->
+        <mxCell id="config" value="&lt;font style=&quot;font-size:12px;&quot; color=&quot;#4A148C&quot;&gt;&lt;b&gt;Host-Only Config&lt;/b&gt;&lt;/font&gt;&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt; (gitignored)&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot; color=&quot;#546E7A&quot;&gt;deploy/server.env — AUTH_BACKEND + credentials&lt;br&gt;deploy/exec.token — shared secret&lt;br&gt;deploy/docker-compose.override.yml — workspace mounts&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7B1FA2;strokeWidth=1;strokeDashPattern=4 2;" vertex="1" parent="1">
+          <mxGeometry x="860" y="790" width="460" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Policy examples -->
+        <mxCell id="policy_title" value="&lt;font style=&quot;font-size:11px;&quot; color=&quot;#4A148C&quot;&gt;&lt;b&gt;Policy Decisions&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
+          <mxGeometry x="860" y="900" width="120" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" value="&lt;font color=&quot;#2E7D32&quot;&gt;APPROVED&lt;/font&gt;  &lt;font color=&quot;#546E7A&quot;&gt;git status&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="860" y="925" width="160" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" value="&lt;font color=&quot;#2E7D32&quot;&gt;APPROVED&lt;/font&gt;  &lt;font color=&quot;#546E7A&quot;&gt;kubectl get pods&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="860" y="947" width="200" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" value="&lt;font color=&quot;#C62828&quot;&gt;DENIED&lt;/font&gt;      &lt;font color=&quot;#546E7A&quot;&gt;terraform destroy&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="860" y="969" width="200" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" value="&lt;font color=&quot;#C62828&quot;&gt;DENIED&lt;/font&gt;      &lt;font color=&quot;#546E7A&quot;&gt;git push --force&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="860" y="991" width="190" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- Step arrows -->
+        <mxCell id="s01" style="rounded=1;strokeColor=#CE93D8;strokeWidth=1;" edge="1" source="exec_server" target="step1" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="s12" style="rounded=1;strokeColor=#CE93D8;strokeWidth=1;" edge="1" source="step1" target="step2" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="s23" style="rounded=1;strokeColor=#CE93D8;strokeWidth=1;" edge="1" source="step2" target="step3" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="s34" style="rounded=1;strokeColor=#CE93D8;strokeWidth=1;" edge="1" source="step3" target="step4" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="s45" style="rounded=1;strokeColor=#CE93D8;strokeWidth=1;" edge="1" source="step4" target="step5" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="s46" style="rounded=1;strokeColor=#CE93D8;strokeWidth=1;" edge="1" source="step4" target="step6" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <!-- CROSS-BOUNDARY ARROWS                                    -->
+        <!-- ══════════════════════════════════════════════════════════ -->
+
+        <!-- socat → exec_server (main flow) -->
+        <mxCell id="main_flow" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#FF9800;strokeWidth=2.5;" edge="1" source="socat" target="exec_server" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="760" y="750" />
+              <mxPoint x="760" y="138" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="main_flow_label" value="&lt;font color=&quot;#E65100&quot; style=&quot;font-size:11px;&quot;&gt;&lt;b&gt;TCP relay&lt;br&gt;127.0.0.1:8377&lt;/b&gt;&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="main_flow">
+          <mxGeometry x="-0.4" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- Response arrow -->
+        <mxCell id="response" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#1565C0;strokeWidth=1.5;dashed=1;dashPattern=8 4;" edge="1" source="step5" target="exec_client" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="790" y="715" />
+              <mxPoint x="790" y="473" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="response_label" value="&lt;font color=&quot;#1565C0&quot; style=&quot;font-size:10px;&quot;&gt;&lt;b&gt;{ stdout, stderr, exit_code }&lt;br&gt;No credentials returned&lt;/b&gt;&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="response">
+          <mxGeometry x="-0.3" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

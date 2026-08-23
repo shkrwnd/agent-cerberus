@@ -108,20 +108,7 @@ This project bridges the gap by intercepting tool calls at the CLI level, routin
 
 ## Architecture
 
-```
-CONTAINER (untrusted)                         HOST (trusted)
-┌──────────────────────────┐                 ┌──────────────────────────────┐
-│ Claude Code                │                 │ Execution Server              │
-│   ↓                        │                 │  (server/main.py)             │
-│ CLI Wrapper (aws/gh/git..) │                 │  1. Verify shared token       │
-│   ↓                        │  localhost TCP  │  2. Auth backend (pluggable)  │
-│ agent-exec ────────────────┼────────────────▶│  3. Fetch temp credentials    │
-│                            │                 │  4. Execute real binary       │
-│ Never sees: credentials,   │◀────────────────┤  5. Return stdout/stderr      │
-│ approval tokens, policy    │  {stdout,stderr │                               │
-│                            │   exit_code}    │ Reads: server.env             │
-└──────────────────────────┘                 └──────────────────────────────┘
-```
+![Agent Cerberus architecture — agent container, sidecar, and host execution server](docs/architecture-diagram.png)
 
 The intent: **bypassing the sandbox must gain nothing.** If the agent deletes the wrappers or opens the TCP connection itself, it just reaches the same execution server, which authorizes on the host using policy the container cannot see or influence. Details in [docs/architecture.md](docs/architecture.md).
 
