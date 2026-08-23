@@ -1,13 +1,13 @@
-# Claude Jail
+# Agent Lockbox
 
-**[Project website](https://shkrwnd.github.io/claude-jail/)** · **[Architecture](docs/architecture.md)** · **[Security policy](SECURITY.md)**
+**[Project website](https://shkrwnd.github.io/agent-lockbox/)** · **[Architecture](docs/architecture.md)** · **[Security policy](SECURITY.md)**
 
-[![CI](https://github.com/shkrwnd/claude-jail/actions/workflows/ci.yml/badge.svg)](https://github.com/shkrwnd/claude-jail/actions/workflows/ci.yml)
+[![CI](https://github.com/shkrwnd/agent-lockbox/actions/workflows/ci.yml/badge.svg)](https://github.com/shkrwnd/agent-lockbox/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
-![Claude Jail demo — safe commands pass, destructive commands are denied by host-side policy](docs/demo.gif)
+![Agent Lockbox demo — safe commands pass, destructive commands are denied by host-side policy](docs/demo.gif)
 
-A sandbox for running Claude Code and other AI coding agents safely in Docker. Docker keeps an agent *in* — it doesn't stop it from running `terraform destroy` or `git push --force` with your credentials. Claude Jail adds the missing half: authorization, credential isolation, and audit logging for every CLI command the agent runs (`aws`, `gh`, `git`, `kubectl`, `terraform`, `psql`, ...).
+A sandbox for running Claude Code and other AI coding agents safely in Docker. Docker keeps an agent *in* — it doesn't stop it from running `terraform destroy` or `git push --force` with your credentials. Agent Lockbox adds the missing half: authorization, credential isolation, and audit logging for every CLI command the agent runs (`aws`, `gh`, `git`, `kubectl`, `terraform`, `psql`, ...).
 
 ## Usage
 
@@ -21,7 +21,7 @@ Everything is managed through `start.sh`:
 | `./start.sh logs` | Tail the execution server log |
 | `./start.sh --help` | Show available commands |
 
-Once inside the container, run `claude` to start Claude Code. All CLI commands (aws, git, kubectl, etc.) are intercepted by wrappers and routed to the host-side execution server for authorization. To add support for other CLI tools, please [open an issue or PR](https://github.com/shkrwnd/claude-jail/issues).
+Once inside the container, run `claude` to start Claude Code. All CLI commands (aws, git, kubectl, etc.) are intercepted by wrappers and routed to the host-side execution server for authorization. To add support for other CLI tools, please [open an issue or PR](https://github.com/shkrwnd/agent-lockbox/issues).
 
 ### Mounting your project folders
 

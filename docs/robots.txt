@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://shkrwnd.github.io/claude-jail/sitemap.xml
+Sitemap: https://shkrwnd.github.io/agent-lockbox/sitemap.xml

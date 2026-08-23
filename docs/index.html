@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Claude Jail — Secure AI Agent Sandbox</title>
+  <title>Agent Lockbox — Secure AI Agent Sandbox</title>
   <meta name="description" content="Run Claude Code and other AI coding agents in a hardened Docker sandbox with credential isolation, command authorization, egress controls, and audit logging.">
   <meta name="robots" content="index,follow">
-  <link rel="canonical" href="https://shkrwnd.github.io/claude-jail/">
-  <meta property="og:title" content="Claude Jail — Secure AI Agent Sandbox">
+  <link rel="canonical" href="https://shkrwnd.github.io/agent-lockbox/">
+  <meta property="og:title" content="Agent Lockbox — Secure AI Agent Sandbox">
   <meta property="og:description" content="A hardened Docker sandbox for Claude Code with host-side authorization, zero credentials in the container, egress controls, and audit logging.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://shkrwnd.github.io/claude-jail/">
+  <meta property="og:url" content="https://shkrwnd.github.io/agent-lockbox/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Claude Jail","description":"A secure Docker sandbox for Claude Code and other AI coding agents with credential isolation, command authorization, egress controls, and audit logging.","codeRepository":"https://github.com/shkrwnd/claude-jail","url":"https://shkrwnd.github.io/claude-jail/","license":"https://www.apache.org/licenses/LICENSE-2.0","programmingLanguage":["Python","Shell","Dockerfile"]}
+  {"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Agent Lockbox","description":"A secure Docker sandbox for Claude Code and other AI coding agents with credential isolation, command authorization, egress controls, and audit logging.","codeRepository":"https://github.com/shkrwnd/agent-lockbox","url":"https://shkrwnd.github.io/agent-lockbox/","license":"https://www.apache.org/licenses/LICENSE-2.0","programmingLanguage":["Python","Shell","Dockerfile"]}
   </script>
   <style>
     :root {
@@ -341,13 +341,13 @@
 
 <nav>
   <div class="nav-inner">
-    <a class="brand" href="#top">Claude Jail</a>
+    <a class="brand" href="#top">Agent Lockbox</a>
     <div class="nav-links">
       <a href="#architecture">Architecture</a>
       <a href="#security">Security</a>
       <a href="#compare">Compare</a>
       <a href="#start">Get Started</a>
-      <a class="nav-gh" href="https://github.com/shkrwnd/claude-jail">
+      <a class="nav-gh" href="https://github.com/shkrwnd/agent-lockbox">
         <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         GitHub
       </a>
@@ -361,10 +361,10 @@
   <header class="hero" id="top">
     <div class="hero-badge"><span class="dot"></span> Open source &middot; Apache 2.0</div>
     <h1>Secure sandbox for AI coding agents</h1>
-    <p class="subtitle">Docker keeps an agent <em>in</em>&thinsp;&mdash;&thinsp;it doesn't stop it from running <code>terraform&nbsp;destroy</code> with your credentials. Claude Jail adds the missing half.</p>
+    <p class="subtitle">Docker keeps an agent <em>in</em>&thinsp;&mdash;&thinsp;it doesn't stop it from running <code>terraform&nbsp;destroy</code> with your credentials. Agent Lockbox adds the missing half.</p>
     <div class="hero-cta">
       <a class="btn btn-w" href="#start">Get Started</a>
-      <a class="btn btn-ghost" href="https://github.com/shkrwnd/claude-jail">
+      <a class="btn btn-ghost" href="https://github.com/shkrwnd/agent-lockbox">
         <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         View on GitHub
       </a>
@@ -375,13 +375,13 @@
         <button onclick="switchTab(this,'src')">Clone from source</button>
       </div>
       <div class="install-code" id="tab-qs">
-        <code>git clone https://github.com/shkrwnd/claude-jail && cd claude-jail && ./start.sh</code>
+        <code>git clone https://github.com/shkrwnd/agent-lockbox && cd agent-lockbox && ./start.sh</code>
         <button class="copy-btn" onclick="copyCmd(this)">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
         </button>
       </div>
       <div class="install-code" id="tab-src" style="display:none">
-        <code>git clone https://github.com/shkrwnd/claude-jail && cd claude-jail && ./start.sh</code>
+        <code>git clone https://github.com/shkrwnd/agent-lockbox && cd agent-lockbox && ./start.sh</code>
         <button class="copy-btn" onclick="copyCmd(this)">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
         </button>
@@ -546,7 +546,7 @@ Sidecar (11 MB Alpine):
     </div>
     <div class="cmp-wrap">
       <table>
-        <thead><tr><th>Control</th><th>Plain Docker</th><th>Other Solutions</th><th>Claude Jail</th></tr></thead>
+        <thead><tr><th>Control</th><th>Plain Docker</th><th>Other Solutions</th><th>Agent Lockbox</th></tr></thead>
         <tbody>
           <tr><td>Process / filesystem isolation</td><td class="y">Included</td><td class="y">Included</td><td class="y">Hardened</td></tr>
           <tr><td>Credentials outside guest</td><td class="n">Usually mounted</td><td class="n">Env vars passed</td><td class="y">Always isolated</td></tr>
@@ -569,13 +569,13 @@ Sidecar (11 MB Alpine):
         <div class="section-title">Up and running in five minutes</div>
         <p class="section-desc">Docker and Git are the only requirements. Claude Code is installed inside the image.</p>
         <div class="qs-note">
-          <strong>Supported tools:</strong> aws, az, gh, git, kubectl, psql, terraform&thinsp;&mdash;&thinsp;adding more is a three-line wrapper. <a href="https://github.com/shkrwnd/claude-jail/issues">Open an issue</a> to request one.
+          <strong>Supported tools:</strong> aws, az, gh, git, kubectl, psql, terraform&thinsp;&mdash;&thinsp;adding more is a three-line wrapper. <a href="https://github.com/shkrwnd/agent-lockbox/issues">Open an issue</a> to request one.
         </div>
       </div>
       <div class="steps">
         <div class="step">
           <div class="step-n">1</div>
-          <div><strong>Clone</strong><code>git clone https://github.com/shkrwnd/claude-jail.git<br>cd claude-jail</code></div>
+          <div><strong>Clone</strong><code>git clone https://github.com/shkrwnd/agent-lockbox.git<br>cd agent-lockbox</code></div>
         </div>
         <div class="step">
           <div class="step-n">2</div>

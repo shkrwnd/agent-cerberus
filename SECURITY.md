@@ -3,14 +3,14 @@
 ## Reporting a Vulnerability
 
 Please report vulnerabilities privately via
-[GitHub Security Advisories](https://github.com/shkrwnd/claude-jail/security/advisories/new)
+[GitHub Security Advisories](https://github.com/shkrwnd/agent-lockbox/security/advisories/new)
 rather than opening a public issue. You should get a response within a few
 days. Please include reproduction steps and which trust boundary (below) you
 believe is broken.
 
 ## Threat Model
 
-Claude Jail assumes the **agent in the container is adversarial** and the
+Agent Lockbox assumes the **agent in the container is adversarial** and the
 **host is trusted**. The security claims are:
 
 1. **No credentials in the container** — the image and container environment

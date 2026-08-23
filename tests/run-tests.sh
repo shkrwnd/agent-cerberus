@@ -7,14 +7,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
 echo "=== Building test container ==="
-docker build -t claude-jail-test -f "${SCRIPT_DIR}/Dockerfile.test" "$PROJECT_DIR"
+docker build -t agent-lockbox-test -f "${SCRIPT_DIR}/Dockerfile.test" "$PROJECT_DIR"
 
 echo ""
 echo "=== Running Python tests ==="
 docker run --rm \
     --cap-drop ALL \
     --security-opt no-new-privileges:true \
-    claude-jail-test \
+    agent-lockbox-test \
     pytest tests/ -v
 
 echo ""

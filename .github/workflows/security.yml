@@ -37,19 +37,19 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build images
         run: |
-          docker build -t claude-jail:scan -f deploy/Dockerfile .
-          docker build -t claude-jail-sidecar:scan deploy/sidecar/
+          docker build -t agent-lockbox:scan -f deploy/Dockerfile .
+          docker build -t agent-lockbox-sidecar:scan deploy/sidecar/
       - name: Scan agent image
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: claude-jail:scan
+          image-ref: agent-lockbox:scan
           format: sarif
           output: trivy-agent.sarif
           severity: CRITICAL,HIGH
       - name: Scan sidecar image
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: claude-jail-sidecar:scan
+          image-ref: agent-lockbox-sidecar:scan
           format: sarif
           output: trivy-sidecar.sarif
           severity: CRITICAL,HIGH

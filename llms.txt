@@ -1,4 +1,4 @@
-# Claude Jail
+# Agent Lockbox
 
 > A sandbox for running Claude Code and other AI coding agents safely in
 > Docker: every CLI command the agent runs (aws, gh, git, kubectl, terraform,
@@ -32,7 +32,7 @@ the real binary, and returns only stdout/stderr/exit code to the container.
 
 ## Repository
 
-- GitHub: https://github.com/shkrwnd/claude-jail
+- GitHub: https://github.com/shkrwnd/agent-lockbox
 - License: Apache-2.0
 - Stdlib-only Python; run tests with
   `PYTHONPATH=. python3 -m unittest discover tests`
