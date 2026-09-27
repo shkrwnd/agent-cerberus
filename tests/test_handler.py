@@ -137,12 +137,48 @@ class TestDecisionHandling(unittest.TestCase):
 
     def test_approved_executes(self):
         from server.auth_backends.base import AuthDecision
-        result = self._execute(
-            AuthDecision(status="approved"),
-            {"tool": "echo", "args": ["hello"]},
-        )
+        with unittest.mock.patch.dict(os.environ, {"EXTRA_ALLOWED_TOOLS": "echo"}):
+            result = self._execute(
+                AuthDecision(status="approved"),
+                {"tool": "echo", "args": ["hello"]},
+            )
         self.assertEqual(result["exit_code"], 0)
         self.assertEqual(result["stdout"].strip(), "hello")
+
+
+class TestToolAllowlist(unittest.TestCase):
+    def _execute(self, tool, args=None):
+        from server.auth_backends.base import AuthDecision
+        with unittest.mock.patch.object(
+            handler, "get_auth_backend",
+            return_value=_StubBackend(AuthDecision(status="approved")),
+        ):
+            return handler.execute({"tool": tool, "args": args or []})
+
+    def test_allowed_tool_passes(self):
+        result = self._execute("git", ["status"])
+        self.assertNotIn("not in the allowed set", result.get("stderr", ""))
+
+    def test_unknown_tool_rejected(self):
+        result = self._execute("curl", ["http://evil.com"])
+        self.assertEqual(result["exit_code"], 1)
+        self.assertIn("not in the allowed set", result["stderr"])
+
+    def test_absolute_path_rejected(self):
+        result = self._execute("/bin/sh", ["-c", "whoami"])
+        self.assertEqual(result["exit_code"], 1)
+        self.assertIn("not in the allowed set", result["stderr"])
+
+    def test_path_separator_rejected(self):
+        with unittest.mock.patch.dict(os.environ, {"EXTRA_ALLOWED_TOOLS": "../bin/sh"}):
+            result = self._execute("../bin/sh", ["-c", "whoami"])
+        self.assertEqual(result["exit_code"], 1)
+        self.assertIn("path separators", result["stderr"])
+
+    def test_extra_allowed_tools_env(self):
+        with unittest.mock.patch.dict(os.environ, {"EXTRA_ALLOWED_TOOLS": "echo"}):
+            result = self._execute("echo", ["safe"])
+        self.assertEqual(result["exit_code"], 0)
 
 
 class TestExecutionTimeout(unittest.TestCase):
@@ -151,7 +187,7 @@ class TestExecutionTimeout(unittest.TestCase):
         with unittest.mock.patch.object(
             handler, "get_auth_backend",
             return_value=_StubBackend(AuthDecision(status="approved")),
-        ), unittest.mock.patch.dict(os.environ, {"EXEC_TIMEOUT": "1"}):
+        ), unittest.mock.patch.dict(os.environ, {"EXEC_TIMEOUT": "1", "EXTRA_ALLOWED_TOOLS": "sleep"}):
             result = handler.execute({"tool": "sleep", "args": ["10"]})
         self.assertEqual(result["exit_code"], 1)
         self.assertIn("timed out after 1s", result["stderr"])

@@ -81,7 +81,14 @@ class AuthBackend(ABC):
     def execution_env(self, tool: str, decision: AuthDecision) -> dict[str, str]:
         """Return the environment to execute the approved command with.
 
-        Default: the host environment as-is. Backends that issue temporary
-        credentials (e.g. Outhora) override this to inject them.
+        Default: the host environment minus known secret keys. Backends
+        that issue temporary credentials override this to inject them.
+        The handler applies an additional scrub pass after this.
         """
-        return dict(os.environ)
+        env = dict(os.environ)
+        for key in list(env):
+            low = key.lower()
+            if any(s in low for s in ("secret", "token", "password", "api_key", "private_key")):
+                if key not in ("PATH", "HOME", "USER", "SHELL", "TERM", "LANG"):
+                    env.pop(key, None)
+        return env

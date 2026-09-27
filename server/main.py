@@ -23,6 +23,8 @@ import json
 import os
 import signal
 import sys
+import threading
+import time
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _ROOT not in sys.path:
@@ -36,6 +38,15 @@ _DEFAULT_ENV = os.path.join(_ROOT, "deploy", "server.env")
 _DEFAULTS_ENV = os.path.join(_ROOT, "deploy", "server.defaults.env")
 _TOKEN_FILE = os.path.join(_ROOT, "deploy", "exec.token")
 
+_MAX_BODY_BYTES = 1 * 1024 * 1024  # 1 MB
+_MAX_CONCURRENT = 20
+_RATE_WINDOW = 10  # seconds
+_RATE_LIMIT = 50   # max requests per window
+
+_request_semaphore = threading.Semaphore(_MAX_CONCURRENT)
+_rate_lock = threading.Lock()
+_rate_timestamps: list[float] = []
+
 
 class ExecutionHandler(http.server.BaseHTTPRequestHandler):
     def log_message(self, format, *args):
@@ -48,6 +59,15 @@ class ExecutionHandler(http.server.BaseHTTPRequestHandler):
             self._respond(404, {"error": f"Unknown path: {self.path}"})
             return
 
+        # Rate limiting — reject if too many requests in the window.
+        now = time.monotonic()
+        with _rate_lock:
+            _rate_timestamps[:] = [t for t in _rate_timestamps if now - t < _RATE_WINDOW]
+            if len(_rate_timestamps) >= _RATE_LIMIT:
+                self._respond(429, {"error": "rate limit exceeded, try again shortly"})
+                return
+            _rate_timestamps.append(now)
+
         # Shared-secret auth: only callers that know EXEC_TOKEN (the container,
         # via deploy/exec.token) may execute — not arbitrary local processes.
         expected = os.environ.get("EXEC_TOKEN", "")
@@ -57,13 +77,22 @@ class ExecutionHandler(http.server.BaseHTTPRequestHandler):
             return
 
         length = int(self.headers.get("Content-Length", 0))
+        if length > _MAX_BODY_BYTES:
+            self._respond(413, {"error": f"request body too large (max {_MAX_BODY_BYTES} bytes)"})
+            return
         try:
             body = json.loads(self.rfile.read(length)) if length else {}
         except json.JSONDecodeError as exc:
             self._respond(400, {"error": f"Invalid JSON: {exc}"})
             return
 
-        result = handler.execute(body)
+        if not _request_semaphore.acquire(timeout=5):
+            self._respond(503, {"error": "too many concurrent requests"})
+            return
+        try:
+            result = handler.execute(body)
+        finally:
+            _request_semaphore.release()
         self._respond(200, result)
 
     def do_GET(self):

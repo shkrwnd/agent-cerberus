@@ -37,6 +37,28 @@ from server.auth_backends import get_auth_backend  # noqa: E402
 # command (e.g. an interactive prompt) from holding a server thread forever.
 _DEFAULT_TIMEOUT = 300
 
+# Only these tool names are accepted. Rejects arbitrary binaries like /bin/sh.
+# Extend this set when adding new CLI wrappers.
+_ALLOWED_TOOLS = frozenset({
+    "aws", "az", "gh", "git", "kubectl", "psql", "terraform",
+})
+
+# Env vars that must never leak to executed commands.
+_SENSITIVE_ENV_KEYS = frozenset({
+    "EXEC_TOKEN",
+    "AUTH_WEBHOOK_TOKEN",
+    "AUTH_WEBHOOK_SECRET",
+    "OUTHORA_AGENT_SECRET",
+    "OUTHORA_API_KEY",
+})
+
+# Git config keys that can trigger arbitrary code execution in the workspace.
+_GIT_SAFE_ARGS = [
+    "-c", "core.hooksPath=/dev/null",
+    "-c", "core.fsmonitor=",
+    "-c", "core.pager=cat",
+]
+
 
 def _exec_timeout() -> int:
     try:
@@ -156,6 +178,17 @@ def _execute(request: dict) -> dict:
     if not isinstance(branch, str):
         return _error("ERROR: 'branch' must be a string")
 
+    # Tool allowlist — reject anything not matching a known wrapper name.
+    extra_tools = set(os.environ.get("EXTRA_ALLOWED_TOOLS", "").split(",")) - {""}
+    if tool not in _ALLOWED_TOOLS and tool not in extra_tools:
+        return _error(
+            f"ERROR: tool {tool!r} is not in the allowed set. "
+            f"Allowed: {', '.join(sorted(_ALLOWED_TOOLS | extra_tools))}. "
+            "Add new tools via EXTRA_ALLOWED_TOOLS in deploy/server.env."
+        )
+    if "/" in tool or "\\" in tool:
+        return _error("ERROR: tool name must not contain path separators")
+
     command = " ".join([tool] + args)
     _log(f"request start: {command!r} (repo={repo}, branch={branch})")
 
@@ -220,18 +253,30 @@ def _execute(request: dict) -> dict:
     # ── 2. Build execution environment (backend may inject temp creds) ───
     env = backend.execution_env(tool, decision)
 
-    # ── 3. Find real binary on the host ──────────────────────────────────
+    # ── 3. Scrub sensitive env vars ────────────────────────────────────
+    for key in _SENSITIVE_ENV_KEYS:
+        env.pop(key, None)
+
+    # ── 4. Find real binary on the host ──────────────────────────────────
     real_binary = shutil.which(tool)
     if not real_binary:
         return _error(f"ERROR: '{tool}' not found on host PATH")
 
-    # ── 4. Execute ────────────────────────────────────────────────────────
+    # ── 5. Build safe command ────────────────────────────────────────────
+    cmd = [real_binary]
+    if tool == "git":
+        cmd += _GIT_SAFE_ARGS
+    cmd += args
+
+    # ── 6. Execute ────────────────────────────────────────────────────────
     # stdin=DEVNULL: commands that try to prompt (passwords, confirmations)
     # fail immediately instead of hanging until the timeout.
     timeout = _exec_timeout()
+    tmp_files = [v for k, v in env.items()
+                 if k == "KUBECONFIG" and v.startswith(("/tmp/", "/var/tmp/"))]
     try:
         result = subprocess.run(
-            [real_binary] + args,
+            cmd,
             env=env,
             cwd=workdir,
             capture_output=True,
@@ -252,3 +297,9 @@ def _execute(request: dict) -> dict:
         )
     except Exception as exc:
         return _error(f"ERROR: Execution failed for {command!r}: {exc}")
+    finally:
+        for path in tmp_files:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
